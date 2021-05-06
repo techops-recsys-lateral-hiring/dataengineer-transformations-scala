@@ -1,7 +1,7 @@
-## Basic Transformations
+# Data transformations with Scala
 
-
-The purpose of this repo is to build data transformation applications.  The code contains ignored tests.  Please unignore these tests and make them pass.  
+This is a collection of _Scala_ jobs that are supposed to transform data.
+These jobs are using _Spark_ to process larger volumes of data and are supposed to run on a _Spark_ cluster (via `spark-submit`).
 
 ## Pre-requisites
 Please make sure you have the following installed
@@ -12,43 +12,99 @@ Please make sure you have the following installed
 
 ## Setup Process
 * Clone the repo
-* Build: sbt package
-* Test: sbt test
+* Package the project with `sbt package` 
+* Ensure that you're able to run the tests with `sbt test` (some are ignored)
+* Sample data is available in the `src/test/resource/data` directory
 
-## Running Data Apps
-* Package the project with
-``` 
-sbt package
-``` 
-* Sample data is available in the src/test/resource/data directory
+## Jobs
+There are two applications in this repo: Word Count, and Citibike.
 
-### Wordcount
-This applications will count the occurrences of a word within a text file. By default this app will read from the words.txt file and write to the target folder.  Pass in the input source path and output path directory to the spark-submit command below if you wish to use different files. 
+Currently these exist as skeletons, and have some initial test cases which are defined but ignored.
+For each application, please un-ignore the tests and implement the missing logic.
 
+## Wordcount
+A NLP model is dependent on a specific input file. This job is supposed to preprocess a given text file to produce this
+input file for the NLP model (feature engineering). This job will count the occurrences of a word within the given text
+file (corpus).
+
+There is a dump of the data lake for this under `test/resources/data/words.txt` with a text file.
+
+#### Input
+Simple `*.txt` file containing text.
+
+#### Output
+A single `*.csv` file containing data similar to:
+```csv
+"word","count"
+"a","3"
+"an","5"
+...
+```
+
+#### Run the job
+Please make sure to package the code before submitting the spark job
 ```
 spark-submit --class thoughtworks.wordcount.WordCount --master local target/scala-2.11/tw-pipeline_2.11-0.1.0-SNAPSHOT.jar
 ```
 
-Currently this application is a skeleton with ignored tests.  Please unignore the tests and build the wordcount application.
+## Citibike
+For analytics purposes the BI department of a bike share company would like to present dashboards, displaying the
+distance each bike was driven. There is a `*.csv` file that contains historical data of previous bike rides. This input
+file needs to be processed in multiple steps. There is a pipeline running these jobs.
 
-### Citibike multi-step pipeline
-This application takes bike trip information and calculates the "as the crow flies" distance traveled for each trip.  
-The application is run in two steps.
-* First the data will be ingested from a sources and transformed to parquet format.
-* Then the application will read the parquet files and apply the appropriate transformations.
+![citibike pipeline](docs/citibike.png)
 
+There is a dump of the datalake for this under `test/resources/citibike/citibike.csv` with historical data.
 
-* To ingest data from external source to datalake:
+### Ingest
+Reads a `*.csv` file and transforms it to parquet format. The column names will be sanitized (whitespaces replaced).
+
+##### Input
+Historical bike ride `*.csv` file:
+```csv
+"tripduration","starttime","stoptime","start station id","start station name","start station latitude",...
+364,"2017-07-01 00:00:00","2017-07-01 00:06:05",539,"Metropolitan Ave & Bedford Ave",40.71534825,...
+...
+```
+
+##### Output
+`*.parquet` files containing the same content
+```csv
+"tripduration","starttime","stoptime","start_station_id","start_station_name","start_station_latitude",...
+364,"2017-07-01 00:00:00","2017-07-01 00:06:05",539,"Metropolitan Ave & Bedford Ave",40.71534825,...
+...
+```
+
+##### Run the job
+Please make sure to package the code before submitting the spark job
 ```
 spark-submit --class thoughtworks.ingest.DailyDriver --master local target/scala-2.11/tw-pipeline_2.11-0.1.0-SNAPSHOT.jar $(INPUT_LOCATION) $(OUTPUT_LOCATION)
 ```
 
-* To transform Citibike data:
+### Distance calculation
+This job takes bike trip information and calculates the "as the crow flies" distance traveled for each trip.
+It reads the previously ingested data parquet files.
+
+Hint: For distance calculation, consider using [**Harvesine formula**](https://en.wikipedia.org/wiki/Haversine_formula) as an option.
+
+##### Input
+Historical bike ride `*.parquet` files
+```csv
+"tripduration",...
+364,...
+...
+```
+
+##### Outputs
+`*.parquet` files containing historical data with distance column containing the calculated distance.
+```csv
+"tripduration",...,"distance"
+364,...,1.34
+...
+```
+
+##### Run the job
+Please make sure to package the code before submitting the spark job
 ```
 spark-submit --class thoughtworks.citibike.CitibikeTransformer --master local target/scala-2.11/tw-pipeline_2.11-0.1.0-SNAPSHOT.jar $(INPUT_LOCATION) $(OUTPUT_LOCATION)
 ```
-
-Currently this application is a skeleton with ignored tests.  Please unignore the tests and build the Citibike transformation application.
-
-#### Tips
-- For distance calculation, consider using [**Harvesine formula**](https://en.wikipedia.org/wiki/Haversine_formula) as an option.  
