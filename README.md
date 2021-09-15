@@ -41,10 +41,16 @@ A single `*.csv` file containing data similar to:
 ...
 ```
 
-#### Run the job
+#### Run the Scala version of job
 Please make sure to package the code before submitting the spark job
 ```
-spark-submit --class thoughtworks.wordcount.WordCount --master local target/scala-2.11/tw-pipeline_2.11-0.1.0-SNAPSHOT.jar
+spark-submit --class thoughtworks.wordcount.WordCount --master local target/scala-2.12/tw-pipeline_2.12-0.1.0-SNAPSHOT.jar
+```
+
+#### Run the Java version of job
+Please make sure to package the code before submitting the spark job
+```
+spark-submit --class thoughtworks.wordcount.WordCountJava --master local target/scala-2.12/tw-pipeline_2.12-0.1.0-SNAPSHOT.jar
 ```
 
 ## Citibike
@@ -75,10 +81,15 @@ Historical bike ride `*.csv` file:
 ...
 ```
 
-##### Run the job
+##### Run the Scala version of job
 Please make sure to package the code before submitting the spark job
 ```
-spark-submit --class thoughtworks.ingest.DailyDriver --master local target/scala-2.11/tw-pipeline_2.11-0.1.0-SNAPSHOT.jar $(INPUT_LOCATION) $(OUTPUT_LOCATION)
+spark-submit --class thoughtworks.ingest.DailyDriver --master local target/scala-2.12/tw-pipeline_2.12-0.1.0-SNAPSHOT.jar $(INPUT_LOCATION) $(OUTPUT_LOCATION)
+```
+##### Run the Java version of job
+Please make sure to package the code before submitting the spark job
+```
+spark-submit --class thoughtworks.ingest.DailyDriverJava --master local target/scala-2.12/tw-pipeline_2.12-0.1.0-SNAPSHOT.jar $(INPUT_LOCATION) $(OUTPUT_LOCATION)
 ```
 
 ### Distance calculation
@@ -103,8 +114,14 @@ Historical bike ride `*.parquet` files
 ...
 ```
 
-##### Run the job
+##### Run the Scala version of job
 Please make sure to package the code before submitting the spark job
 ```
-spark-submit --class thoughtworks.citibike.CitibikeTransformer --master local target/scala-2.11/tw-pipeline_2.11-0.1.0-SNAPSHOT.jar $(INPUT_LOCATION) $(OUTPUT_LOCATION)
+spark-submit --class thoughtworks.citibike.CitibikeTransformer --master local target/scala-2.12/tw-pipeline_2.12-0.1.0-SNAPSHOT.jar $(INPUT_LOCATION) $(OUTPUT_LOCATION)
+```
+
+##### Run the Java version of job
+Please make sure to package the code before submitting the spark job
+```
+spark-submit --class thoughtworks.citibike.CitibikeTransformerJava --master local target/scala-2.12/tw-pipeline_2.12-0.1.0-SNAPSHOT.jar $(INPUT_LOCATION) $(OUTPUT_LOCATION)
 ```

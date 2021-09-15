@@ -1,15 +1,14 @@
 package thoughtworks.citibike
 
-import java.nio.file.Files
-
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types.{DoubleType, StructField}
 import thoughtworks.DefaultFeatureSpecWithSpark
 
-class CitibikeTransformerTest extends DefaultFeatureSpecWithSpark {
+import java.nio.file.Files
 
-  import spark.implicits._
+class CitibikeTransformerTest extends DefaultFeatureSpecWithSpark {
+  import testImplicits._
 
   val citibikeBaseDataColumns = Seq(
     "tripduration", "starttime", "stoptime", "start_station_id", "start_station_name", "start_station_latitude", "start_station_longitude", "end_station_id", "end_station_name", "end_station_latitude", "end_station_longitude", "bikeid", "usertype", "birth_year", "gender"
@@ -22,9 +21,7 @@ class CitibikeTransformerTest extends DefaultFeatureSpecWithSpark {
 
   feature("Citibike Transformer Application") {
     scenario("Citibike Transformer Should Maintain All Of The Data It Read") {
-
       Given("Ingested data")
-
       val (ingestDir, transformDir) = makeInputAndOutputDirectories("Citibike")
       val inputDF = sampleCitibikeData.toDF(citibikeBaseDataColumns: _*)
       inputDF.write.parquet(ingestDir)

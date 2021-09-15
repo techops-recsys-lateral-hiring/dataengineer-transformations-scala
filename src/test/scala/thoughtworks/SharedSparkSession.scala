@@ -1,30 +1,28 @@
 package thoughtworks
+import org.apache.spark.sql.{SQLContext, SparkSession}
+import org.scalatest.{BeforeAndAfterAll, FeatureSpec, Suite}
 
-import org.apache.spark.sql.{SQLContext, SQLImplicits, SparkSession}
-import org.scalatest.{BeforeAndAfterAll, FeatureSpec, GivenWhenThen, Matchers}
-
-class DefaultFeatureSpecWithSpark extends FeatureSpec with GivenWhenThen with BeforeAndAfterAll with Matchers { self: FeatureSpec =>
+trait SharedSparkSession
+  extends FeatureSpec with BeforeAndAfterAll {
 
   private var _spark: SparkSession = null
 
   protected implicit def spark: SparkSession = _spark
 
-  protected object testImplicits extends SQLImplicits {
-    protected override def _sqlContext: SQLContext = self.spark.sqlContext
-  }
+  protected implicit def sqlContext: SQLContext = _spark.sqlContext
 
   protected override def beforeAll(): Unit = {
     if (_spark == null) {
-      _spark = SparkSession.builder
-        .appName("Spark Test App")
-        .config("spark.driver.host","127.0.0.1")
-        .master("local")
-        .getOrCreate()
+      _spark = SparkSession.builder.master("local[2]").appName(getClass.getSimpleName).getOrCreate
     }
 
+    // Ensure we have initialized the context before calling parent code
     super.beforeAll()
   }
 
+  /**
+   * Stop the underlying [[org.apache.spark.SparkContext]], if any.
+   */
   protected override def afterAll(): Unit = {
     try {
       super.afterAll()

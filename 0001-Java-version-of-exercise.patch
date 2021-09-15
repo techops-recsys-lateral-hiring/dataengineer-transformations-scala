@@ -1,0 +1,885 @@
+From a91f85ad96caaec3729969e8d3d8da9daa1d4586 Mon Sep 17 00:00:00 2001
+From: darshan jani <darshanj@thoughtworks.com>
+Date: Wed, 15 Sep 2021 09:42:43 +0800
+Subject: [PATCH] Java version of exercise
+
+---
+ README.md                                     |  29 +++-
+ build.sbt                                     |   9 +-
+ .../citibike/CitibikeTransformerJava.java     |  50 ++++++
+ .../thoughtworks/ingest/DailyDriverJava.java  |  52 ++++++
+ .../thoughtworks/wordcount/WordCountJava.java |  49 ++++++
+ .../DefaultFeatureSpecWithSpark.scala         |  53 +++++--
+ .../DefaultJavaTestWithSpark.java             |   8 +
+ .../thoughtworks/SharedSparkSession.scala     |  45 ++++++
+ .../citibike/CitibikeTransformerJavaTest.java | 150 ++++++++++++++++++
+ .../citibike/CitibikeTransformerTest.scala    |   9 +-
+ .../ingest/DailyDriverJavaTest.java           |  46 ++++++
+ .../sanitytest/SanityJavaTest.java            |  19 +++
+ .../wordcount/WordCountJavaTest.java          | 136 ++++++++++++++++
+ .../wordcount/WordCountUtilsJavaTest.java     |  55 +++++++
+ 14 files changed, 687 insertions(+), 23 deletions(-)
+ create mode 100644 src/main/scala/thoughtworks/citibike/CitibikeTransformerJava.java
+ create mode 100644 src/main/scala/thoughtworks/ingest/DailyDriverJava.java
+ create mode 100644 src/main/scala/thoughtworks/wordcount/WordCountJava.java
+ create mode 100644 src/test/scala/thoughtworks/DefaultJavaTestWithSpark.java
+ create mode 100644 src/test/scala/thoughtworks/SharedSparkSession.scala
+ create mode 100644 src/test/scala/thoughtworks/citibike/CitibikeTransformerJavaTest.java
+ create mode 100644 src/test/scala/thoughtworks/ingest/DailyDriverJavaTest.java
+ create mode 100644 src/test/scala/thoughtworks/sanitytest/SanityJavaTest.java
+ create mode 100644 src/test/scala/thoughtworks/wordcount/WordCountJavaTest.java
+ create mode 100644 src/test/scala/thoughtworks/wordcount/WordCountUtilsJavaTest.java
+
+diff --git a/README.md b/README.md
+index 7a52c92..9362871 100644
+--- a/README.md
++++ b/README.md
+@@ -41,10 +41,16 @@ A single `*.csv` file containing data similar to:
+ ...
+ ```
+ 
+-#### Run the job
++#### Run the Scala version of job
+ Please make sure to package the code before submitting the spark job
+ ```
+-spark-submit --class thoughtworks.wordcount.WordCount --master local target/scala-2.11/tw-pipeline_2.11-0.1.0-SNAPSHOT.jar
++spark-submit --class thoughtworks.wordcount.WordCount --master local target/scala-2.12/tw-pipeline_2.12-0.1.0-SNAPSHOT.jar
++```
++
++#### Run the Java version of job
++Please make sure to package the code before submitting the spark job
++```
++spark-submit --class thoughtworks.wordcount.WordCountJava --master local target/scala-2.12/tw-pipeline_2.12-0.1.0-SNAPSHOT.jar
+ ```
+ 
+ ## Citibike
+@@ -75,10 +81,15 @@ Historical bike ride `*.csv` file:
+ ...
+ ```
+ 
+-##### Run the job
++##### Run the Scala version of job
++Please make sure to package the code before submitting the spark job
++```
++spark-submit --class thoughtworks.ingest.DailyDriver --master local target/scala-2.12/tw-pipeline_2.12-0.1.0-SNAPSHOT.jar $(INPUT_LOCATION) $(OUTPUT_LOCATION)
++```
++##### Run the Java version of job
+ Please make sure to package the code before submitting the spark job
+ ```
+-spark-submit --class thoughtworks.ingest.DailyDriver --master local target/scala-2.11/tw-pipeline_2.11-0.1.0-SNAPSHOT.jar $(INPUT_LOCATION) $(OUTPUT_LOCATION)
++spark-submit --class thoughtworks.ingest.DailyDriverJava --master local target/scala-2.12/tw-pipeline_2.12-0.1.0-SNAPSHOT.jar $(INPUT_LOCATION) $(OUTPUT_LOCATION)
+ ```
+ 
+ ### Distance calculation
+@@ -103,8 +114,14 @@ Historical bike ride `*.parquet` files
+ ...
+ ```
+ 
+-##### Run the job
++##### Run the Scala version of job
+ Please make sure to package the code before submitting the spark job
+ ```
+-spark-submit --class thoughtworks.citibike.CitibikeTransformer --master local target/scala-2.11/tw-pipeline_2.11-0.1.0-SNAPSHOT.jar $(INPUT_LOCATION) $(OUTPUT_LOCATION)
++spark-submit --class thoughtworks.citibike.CitibikeTransformer --master local target/scala-2.12/tw-pipeline_2.12-0.1.0-SNAPSHOT.jar $(INPUT_LOCATION) $(OUTPUT_LOCATION)
++```
++
++##### Run the Java version of job
++Please make sure to package the code before submitting the spark job
+ ```
++spark-submit --class thoughtworks.citibike.CitibikeTransformerJava --master local target/scala-2.12/tw-pipeline_2.12-0.1.0-SNAPSHOT.jar $(INPUT_LOCATION) $(OUTPUT_LOCATION)
++```
+\ No newline at end of file
+diff --git a/build.sbt b/build.sbt
+index d416bc7..652744f 100644
+--- a/build.sbt
++++ b/build.sbt
+@@ -1,5 +1,5 @@
+ 
+-scalaVersion := "2.11.8"
++scalaVersion := "2.12.4"
+ 
+ val sparkVersion = "2.4.0"
+ 
+@@ -17,6 +17,11 @@ lazy val root = (project in file(".")).
+       "org.apache.spark" %% "spark-sql" % sparkVersion,
+       "org.apache.spark" %% "spark-streaming" % sparkVersion,
+       "com.typesafe" % "config" % "1.3.2",
+-      "org.scalatest" %% "scalatest" % "3.0.5" % "test"
++      "org.scalatest" %% "scalatest" % "3.0.5" % "test",
++      "junit" % "junit" % "4.13.2" % Test,
++      "com.novocode" % "junit-interface" % "0.11" % Test
+     )
+   )
++testOptions in Test := Seq(Tests.Argument(TestFrameworks.JUnit, "-a"))
++fork in run := true
++
+diff --git a/src/main/scala/thoughtworks/citibike/CitibikeTransformerJava.java b/src/main/scala/thoughtworks/citibike/CitibikeTransformerJava.java
+new file mode 100644
+index 0000000..d2ea75f
+--- /dev/null
++++ b/src/main/scala/thoughtworks/citibike/CitibikeTransformerJava.java
+@@ -0,0 +1,50 @@
++package thoughtworks.citibike;
++
++import org.apache.log4j.Level;
++import org.apache.log4j.LogManager;
++import org.apache.log4j.Logger;
++import org.apache.spark.sql.Dataset;
++import org.apache.spark.sql.Row;
++import org.apache.spark.sql.SparkSession;
++
++public class CitibikeTransformerJava {
++    static Logger log = LogManager.getRootLogger();
++
++    public static void main(String[] args) {
++        log.setLevel(Level.INFO);
++        SparkSession spark = SparkSession.builder().appName("Citibike Transformer").getOrCreate();
++        log.info("Citibike Transformer Application Initialized: " + spark.sparkContext().appName());
++
++        if (args.length < 2) {
++            log.warn("Input source and output path are required");
++            System.exit(1);
++        }
++
++        final String ingestPath = args[0];
++        final String transformationPath = args[1];
++        run(spark, ingestPath, transformationPath);
++
++        log.info("Citibike Application Done: " + spark.sparkContext().appName());
++        spark.stop();
++    }
++
++    public static void run(SparkSession sparkSession, String ingestPath, String outputPath) {
++        Dataset<Row> df = sparkSession.read()
++                .parquet(ingestPath);
++
++        Dataset<Row> computeDistances = computeDistances(df);
++
++        computeDistances.show(false);
++
++        computeDistances.write().parquet(outputPath);
++    }
++
++    private static Dataset<Row> computeDistances(Dataset<Row> df) {
++        final Double MetersPerFoot = 0.3048;
++        final Integer FeetPerMile = 5280;
++
++        final Double EarthRadiusInM = 6371e3;
++        final Double MetersPerMile = MetersPerFoot * FeetPerMile;
++        return df;
++    }
++}
+diff --git a/src/main/scala/thoughtworks/ingest/DailyDriverJava.java b/src/main/scala/thoughtworks/ingest/DailyDriverJava.java
+new file mode 100644
+index 0000000..63f9440
+--- /dev/null
++++ b/src/main/scala/thoughtworks/ingest/DailyDriverJava.java
+@@ -0,0 +1,52 @@
++package thoughtworks.ingest;
++
++import org.apache.log4j.Level;
++import org.apache.log4j.LogManager;
++import org.apache.log4j.Logger;
++import org.apache.spark.sql.Dataset;
++import org.apache.spark.sql.Row;
++import org.apache.spark.sql.SparkSession;
++
++public class DailyDriverJava {
++
++    static Logger log = LogManager.getRootLogger();
++
++    public static void main(String[] args) {
++        log.setLevel(Level.INFO);
++        SparkSession spark = SparkSession.builder().appName("Skinny Pipeline: Ingest").getOrCreate();
++        log.info("Application Initialized: " + spark.sparkContext().appName());
++
++        if (args.length < 2) {
++            log.warn("Input source and output path are required");
++            System.exit(1);
++        }
++
++        final String inputSource = args[0];
++        final String outputPath = args[1];
++        run(spark, inputSource, outputPath);
++
++        log.info("Application Done: " + spark.sparkContext().appName());
++        spark.stop();
++    }
++
++    public static void run(SparkSession spark, String inputSource, String outputPath) {
++        Dataset<Row> inputDataFrame = spark.read()
++                .format("org.apache.spark.csv")
++                .option("header", true)
++                .csv(inputSource);
++        formatColumnHeaders(inputDataFrame)
++                .write()
++                .parquet(outputPath);
++    }
++
++    private static Dataset<Row> formatColumnHeaders(Dataset<Row> dataFrame) {
++        Dataset<Row> retDf = dataFrame;
++        String[] columns = dataFrame.columns();
++        for (String column : columns) {
++            retDf = retDf.withColumnRenamed(column, column.replaceAll("\\s", "_"));
++        }
++        retDf.printSchema();
++        return retDf;
++    }
++
++}
+diff --git a/src/main/scala/thoughtworks/wordcount/WordCountJava.java b/src/main/scala/thoughtworks/wordcount/WordCountJava.java
+new file mode 100644
+index 0000000..e41e20d
+--- /dev/null
++++ b/src/main/scala/thoughtworks/wordcount/WordCountJava.java
+@@ -0,0 +1,49 @@
++package thoughtworks.wordcount;
++
++import org.apache.log4j.Level;
++import org.apache.log4j.LogManager;
++import org.apache.log4j.Logger;
++import org.apache.spark.sql.Dataset;
++import org.apache.spark.sql.Encoders;
++import org.apache.spark.sql.SparkSession;
++
++import java.time.LocalDateTime;
++
++public class WordCountJava {
++    static Logger log = LogManager.getRootLogger();
++
++    public static void main(String[] args) {
++        log.setLevel(Level.INFO);
++
++        SparkSession spark = SparkSession.builder().appName("Word Count").getOrCreate();
++        log.info("Application Initialized: " + spark.sparkContext().appName());
++
++        final String inputPath = (args.length > 0) ? args[0] : "./src/test/resources/data/words.txt";
++        final String outputPath = (args.length > 1) ? args[1] : "./target/test-" + LocalDateTime.now();
++        run(spark, inputPath, outputPath);
++
++        log.info("Application Done: " + spark.sparkContext().appName());
++        spark.stop();
++    }
++
++    public static Dataset<String> splitWords(Dataset<String> ds) {
++        return ds;
++    }
++
++    public static Dataset<String> countByWord(Dataset<String> ds) {
++        return ds;
++    }
++
++    public static void run(SparkSession spark, String inputPath, String outputPath) {
++        log.info("Reading text file from: " + inputPath);
++        log.info("Writing csv to directory: " + outputPath);
++
++        Dataset<String> lines = spark.read().text(inputPath).as(Encoders.STRING());
++        Dataset<String> splitWords = splitWords(lines);
++        Dataset<String> wordCounts = countByWord(splitWords);
++        wordCounts.write()
++                .csv(outputPath);
++
++    }
++}
++
+diff --git a/src/test/scala/thoughtworks/DefaultFeatureSpecWithSpark.scala b/src/test/scala/thoughtworks/DefaultFeatureSpecWithSpark.scala
+index b3b9c6b..18deb21 100644
+--- a/src/test/scala/thoughtworks/DefaultFeatureSpecWithSpark.scala
++++ b/src/test/scala/thoughtworks/DefaultFeatureSpecWithSpark.scala
+@@ -1,12 +1,47 @@
+ package thoughtworks
+ 
+-import org.apache.spark.sql.SparkSession
+-import org.scalatest.{FeatureSpec, GivenWhenThen, Matchers}
+-
+-class DefaultFeatureSpecWithSpark extends FeatureSpec with GivenWhenThen with Matchers {
+-  val spark: SparkSession = SparkSession.builder
+-    .appName("Spark Test App")
+-    .config("spark.driver.host","127.0.0.1")
+-    .master("local")
+-    .getOrCreate()
++import org.apache.spark.sql.{SQLContext, SQLImplicits, SparkSession}
++import org.scalatest.{BeforeAndAfterAll, FeatureSpec, GivenWhenThen, Matchers}
++
++class DefaultFeatureSpecWithSpark extends FeatureSpec with GivenWhenThen with BeforeAndAfterAll with Matchers { self: FeatureSpec =>
++
++  private var _spark: SparkSession = null
++
++  protected implicit def spark: SparkSession = _spark
++
++  protected object testImplicits extends SQLImplicits {
++    protected override def _sqlContext: SQLContext = self.spark.sqlContext
++  }
++
++  protected override def beforeAll(): Unit = {
++    if (_spark == null) {
++      _spark = SparkSession.builder
++        .appName("Spark Test App")
++        .config("spark.driver.host","127.0.0.1")
++        .master("local")
++        .getOrCreate()
++    }
++
++    super.beforeAll()
++  }
++
++  protected override def afterAll(): Unit = {
++    try {
++      super.afterAll()
++    } finally {
++      try {
++        if (_spark != null) {
++          try {
++            _spark.sessionState.catalog.reset()
++          } finally {
++            _spark.stop()
++            _spark = null
++          }
++        }
++      } finally {
++        SparkSession.clearActiveSession()
++        SparkSession.clearDefaultSession()
++      }
++    }
++  }
+ }
+diff --git a/src/test/scala/thoughtworks/DefaultJavaTestWithSpark.java b/src/test/scala/thoughtworks/DefaultJavaTestWithSpark.java
+new file mode 100644
+index 0000000..b083478
+--- /dev/null
++++ b/src/test/scala/thoughtworks/DefaultJavaTestWithSpark.java
+@@ -0,0 +1,8 @@
++package thoughtworks;
++
++import org.apache.spark.sql.SparkSession;
++
++public abstract class DefaultJavaTestWithSpark extends DefaultFeatureSpecWithSpark {
++
++    protected transient SparkSession spark = spark();
++}
+\ No newline at end of file
+diff --git a/src/test/scala/thoughtworks/SharedSparkSession.scala b/src/test/scala/thoughtworks/SharedSparkSession.scala
+new file mode 100644
+index 0000000..20d9914
+--- /dev/null
++++ b/src/test/scala/thoughtworks/SharedSparkSession.scala
+@@ -0,0 +1,45 @@
++package thoughtworks
++import org.apache.spark.sql.{SQLContext, SparkSession}
++import org.scalatest.{BeforeAndAfterAll, FeatureSpec, Suite}
++
++trait SharedSparkSession
++  extends FeatureSpec with BeforeAndAfterAll {
++
++  private var _spark: SparkSession = null
++
++  protected implicit def spark: SparkSession = _spark
++
++  protected implicit def sqlContext: SQLContext = _spark.sqlContext
++
++  protected override def beforeAll(): Unit = {
++    if (_spark == null) {
++      _spark = SparkSession.builder.master("local[2]").appName(getClass.getSimpleName).getOrCreate
++    }
++
++    // Ensure we have initialized the context before calling parent code
++    super.beforeAll()
++  }
++
++  /**
++   * Stop the underlying [[org.apache.spark.SparkContext]], if any.
++   */
++  protected override def afterAll(): Unit = {
++    try {
++      super.afterAll()
++    } finally {
++      try {
++        if (_spark != null) {
++          try {
++            _spark.sessionState.catalog.reset()
++          } finally {
++            _spark.stop()
++            _spark = null
++          }
++        }
++      } finally {
++        SparkSession.clearActiveSession()
++        SparkSession.clearDefaultSession()
++      }
++    }
++  }
++}
+\ No newline at end of file
+diff --git a/src/test/scala/thoughtworks/citibike/CitibikeTransformerJavaTest.java b/src/test/scala/thoughtworks/citibike/CitibikeTransformerJavaTest.java
+new file mode 100644
+index 0000000..d03852d
+--- /dev/null
++++ b/src/test/scala/thoughtworks/citibike/CitibikeTransformerJavaTest.java
+@@ -0,0 +1,150 @@
++package thoughtworks.citibike;
++
++import org.apache.spark.sql.Column;
++import org.apache.spark.sql.Dataset;
++import org.apache.spark.sql.Row;
++import org.apache.spark.sql.RowFactory;
++import org.apache.spark.sql.types.DataTypes;
++import org.apache.spark.sql.types.Metadata;
++import org.apache.spark.sql.types.StructField;
++import org.apache.spark.sql.types.StructType;
++import org.junit.Ignore;
++import org.junit.Test;
++import thoughtworks.DefaultJavaTestWithSpark;
++
++import java.io.IOException;
++import java.nio.file.Files;
++import java.nio.file.Path;
++import java.util.Arrays;
++import java.util.Comparator;
++import java.util.List;
++import java.util.Optional;
++import java.util.stream.Collectors;
++
++import static org.apache.spark.sql.functions.col;
++import static org.apache.spark.sql.types.DataTypes.DoubleType;
++import static org.junit.Assert.*;
++
++public class CitibikeTransformerJavaTest extends DefaultJavaTestWithSpark {
++
++    List<Row> sampleCitibikeData = Arrays.asList(
++            RowFactory.create(328, "2017-07-01 00:00:08", "2017-07-01 00:05:37", 3242, "Schermerhorn St & Court St", 40.69102925677968, -73.99183362722397, 3397, "Court St & Nelson St", 40.6763947, -73.99869893, 27937, "Subscriber", 1984, 2),
++            RowFactory.create(1496, "2017-07-01 00:00:18", "2017-07-01 00:25:15", 3233, "E 48 St & 5 Ave", 40.75724567911726, -73.97805914282799, 546, "E 30 St & Park Ave S", 40.74444921, -73.98303529, 15933, "Customer", 1971, 1),
++            RowFactory.create(1067, "2017-07-01 00:16:31", "2017-07-01 00:34:19", 448, "W 37 St & 10 Ave", 40.75660359, -73.9979009, 487, "E 20 St & FDR Drive", 40.73314259, -73.97573881, 27084, "Subscriber", 1990, 2)
++    );
++
++    List<StructField> citibikeBaseDataColumns = Arrays.asList(
++            DataTypes.createStructField("tripduration", DataTypes.IntegerType, false),
++            DataTypes.createStructField("starttime", DataTypes.StringType, true),
++            DataTypes.createStructField("stoptime", DataTypes.StringType, true),
++            DataTypes.createStructField("start_station_id", DataTypes.IntegerType, false),
++            DataTypes.createStructField("start_station_name", DataTypes.StringType, true),
++            DataTypes.createStructField("start_station_latitude", DoubleType, false),
++            DataTypes.createStructField("start_station_longitude", DoubleType, false),
++            DataTypes.createStructField("end_station_id", DataTypes.IntegerType, false),
++            DataTypes.createStructField("end_station_name", DataTypes.StringType, true),
++            DataTypes.createStructField("end_station_latitude", DoubleType, false),
++            DataTypes.createStructField("end_station_longitude", DoubleType, false),
++            DataTypes.createStructField("bikeid", DataTypes.IntegerType, false),
++            DataTypes.createStructField("usertype", DataTypes.StringType, true),
++            DataTypes.createStructField("birth_year", DataTypes.IntegerType, false),
++            DataTypes.createStructField("gender", DataTypes.IntegerType, false)
++    );
++
++    StructType citibikeBaseDataColumnsSchema = DataTypes.createStructType(citibikeBaseDataColumns);
++
++    @Test
++    public void testCitibikeTransformationShouldRetainOldDataWhileReadingNewData() throws IOException {
++
++//        Given("Ingested data")
++        Directories directories = RootDirectory.at("Citibike").createDirectories();
++        String ingestDir = directories.ingest;
++        String transformDir = directories.transform;
++
++        Dataset<Row> inputDF = spark.createDataFrame(sampleCitibikeData, citibikeBaseDataColumnsSchema);
++        inputDF.write().parquet(ingestDir);
++
++//        When("Citibike Transformation is run for bikeshare data")
++        CitibikeTransformerJava.run(spark, ingestDir, transformDir);
++
++//        Then("The new data should have all of the old data")
++        Dataset<Row> transformedDF = spark.read().parquet(transformDir);
++        transformedDF.show();
++
++        Column[] columnStream = citibikeBaseDataColumns.stream().map(cN -> col(cN.name())).collect(Collectors.toList()).stream().toArray(Column[]::new);
++        Row[] newColumns = transformedDF.select(columnStream).collectAsList().stream().toArray(Row[]::new);
++        Row[] expectedColumns = sampleCitibikeData.stream().toArray(Row[]::new);
++        assertArrayEquals(expectedColumns, newColumns);
++
++        StructField[] transformedDFFields = transformedDF.schema().fields();
++        Arrays.sort(transformedDFFields, Comparator.comparing(StructField::name));
++
++        StructField[] inputDFFields = transformedDF.schema().fields();
++        Arrays.sort(inputDFFields, Comparator.comparing(StructField::name));
++
++        assertArrayEquals(transformedDFFields, inputDFFields);
++
++    }
++
++    @Ignore
++    public void testDailyDriverTransformationShouldContainDistanceColumnData() throws IOException {
++        Directories directories = RootDirectory.at("Citibike").createDirectories();
++        String ingestDir = directories.ingest;
++        String transformDir = directories.transform;
++
++//        Given("Ingested data")
++
++        Dataset<Row> inputDF = spark.createDataFrame(sampleCitibikeData, citibikeBaseDataColumnsSchema);
++        inputDF.write().parquet(ingestDir);
++
++
++//        When("Daily Driver Transformation is run for Bikeshare data")
++
++        CitibikeTransformerJava.run(spark, ingestDir, transformDir);
++
++//        Then("The data should contain a distance column")
++        Dataset<Row> transformedDF = spark.read().parquet(transformDir);
++
++        List<Row> expectedData = Arrays.asList(
++                RowFactory.create(328, "2017-07-01 00:00:08", "2017-07-01 00:05:37", 3242, "Schermerhorn St & Court St", 40.69102925677968, -73.99183362722397, 3397, "Court St & Nelson St", 40.6763947, -73.99869893, 27937, "Subscriber", 1984, 2, 1.07),
++                RowFactory.create(1496, "2017-07-01 00:00:18", "2017-07-01 00:25:15", 3233, "E 48 St & 5 Ave", 40.75724567911726, -73.97805914282799, 546, "E 30 St & Park Ave S", 40.74444921, -73.98303529, 15933, "Customer", 1971, 1, 0.92),
++                RowFactory.create(1067, "2017-07-01 00:16:31", "2017-07-01 00:34:19", 448, "W 37 St & 10 Ave", 40.75660359, -73.9979009, 487, "E 20 St & FDR Drive", 40.73314259, -73.97573881, 27084, "Subscriber", 1990, 2.0, 1.99)
++        );
++        Optional<StructField> distance = Arrays.stream(transformedDF.schema().fields()).filter(x -> x.name().equals("distance")).findFirst();
++        assertTrue(distance.isPresent());
++        assertEquals(distance.get(), new StructField("distance", DoubleType, true, Metadata.empty()));
++        Row[] newColumns = transformedDF.collectAsList().stream().toArray(Row[]::new);
++
++        Row[] expectedColumns = expectedData.stream().toArray(Row[]::new);
++        assertArrayEquals(expectedColumns, newColumns);
++
++    }
++
++    static class RootDirectory {
++        private String folderNameSuffix;
++
++        private RootDirectory(String folderNameSuffix) {
++            this.folderNameSuffix = folderNameSuffix;
++        }
++
++        public static RootDirectory at(String folderNameSuffix) {
++            return new RootDirectory(folderNameSuffix);
++        }
++
++        public Directories createDirectories() throws IOException {
++            Path rootDirectory = Files.createTempDirectory(this.getClass().getName() + folderNameSuffix);
++            return new Directories(rootDirectory.resolve("ingest").toUri().toString(), rootDirectory.resolve("transform").toUri().toString());
++        }
++    }
++
++    static class Directories {
++
++        public String ingest;
++        public String transform;
++
++        public Directories(String ingest, String transform) {
++            this.ingest = ingest;
++            this.transform = transform;
++        }
++    }
++}
+diff --git a/src/test/scala/thoughtworks/citibike/CitibikeTransformerTest.scala b/src/test/scala/thoughtworks/citibike/CitibikeTransformerTest.scala
+index b2d24b0..a42d0d8 100644
+--- a/src/test/scala/thoughtworks/citibike/CitibikeTransformerTest.scala
++++ b/src/test/scala/thoughtworks/citibike/CitibikeTransformerTest.scala
+@@ -1,15 +1,14 @@
+ package thoughtworks.citibike
+ 
+-import java.nio.file.Files
+-
+ import org.apache.spark.sql.Row
+ import org.apache.spark.sql.functions._
+ import org.apache.spark.sql.types.{DoubleType, StructField}
+ import thoughtworks.DefaultFeatureSpecWithSpark
+ 
+-class CitibikeTransformerTest extends DefaultFeatureSpecWithSpark {
++import java.nio.file.Files
+ 
+-  import spark.implicits._
++class CitibikeTransformerTest extends DefaultFeatureSpecWithSpark {
++  import testImplicits._
+ 
+   val citibikeBaseDataColumns = Seq(
+     "tripduration", "starttime", "stoptime", "start_station_id", "start_station_name", "start_station_latitude", "start_station_longitude", "end_station_id", "end_station_name", "end_station_latitude", "end_station_longitude", "bikeid", "usertype", "birth_year", "gender"
+@@ -22,9 +21,7 @@ class CitibikeTransformerTest extends DefaultFeatureSpecWithSpark {
+ 
+   feature("Citibike Transformer Application") {
+     scenario("Citibike Transformer Should Maintain All Of The Data It Read") {
+-
+       Given("Ingested data")
+-
+       val (ingestDir, transformDir) = makeInputAndOutputDirectories("Citibike")
+       val inputDF = sampleCitibikeData.toDF(citibikeBaseDataColumns: _*)
+       inputDF.write.parquet(ingestDir)
+diff --git a/src/test/scala/thoughtworks/ingest/DailyDriverJavaTest.java b/src/test/scala/thoughtworks/ingest/DailyDriverJavaTest.java
+new file mode 100644
+index 0000000..14caf5b
+--- /dev/null
++++ b/src/test/scala/thoughtworks/ingest/DailyDriverJavaTest.java
+@@ -0,0 +1,46 @@
++package thoughtworks.ingest;
++
++import org.apache.spark.sql.Dataset;
++import org.apache.spark.sql.Row;
++import org.junit.Test;
++import thoughtworks.DefaultJavaTestWithSpark;
++
++import java.io.IOException;
++import java.nio.file.Files;
++import java.nio.file.Path;
++import java.nio.file.StandardOpenOption;
++import java.util.Arrays;
++import java.util.Collections;
++import java.util.List;
++
++import static org.junit.Assert.assertArrayEquals;
++import static org.junit.Assert.assertEquals;
++
++public class DailyDriverJavaTest extends DefaultJavaTestWithSpark {
++    @Test
++    public void testDailyDriverDataIsStoredInParquetFormatWithBothRows() throws IOException {
++//        Given("Input data in the expected format")
++
++        Path rootDirectory = Files.createTempDirectory(this.getClass().getName());
++
++        Path inputCsv = Files.createFile(rootDirectory.resolve("input.csv"));
++        Path outputDirectory = rootDirectory.resolve("output");
++
++        List<String> lines1 = Arrays.asList(
++                "first_field,field with space, fieldWithOuterSpaces ",
++                "3,1,4",
++                "1,5,2");
++
++        Files.write(inputCsv, lines1, StandardOpenOption.CREATE);
++
++//        When("Daily Driver Ingestion is run")
++        DailyDriverJava.run(spark, inputCsv.toUri().toString(), outputDirectory.toUri().toString());
++
++//        Then("The data is stored in Parquet format with both rows")
++        Dataset<Row> parquetDirectory = spark.read().parquet(outputDirectory.toUri().toString());
++        assertEquals(parquetDirectory.count(), 2);
++
++//        And("The column headers are renamed")
++        assertArrayEquals(parquetDirectory.columns(), new String[]{"first_field", "field_with_space", "_fieldWithOuterSpaces_"});
++    }
++}
+diff --git a/src/test/scala/thoughtworks/sanitytest/SanityJavaTest.java b/src/test/scala/thoughtworks/sanitytest/SanityJavaTest.java
+new file mode 100644
+index 0000000..5a14a13
+--- /dev/null
++++ b/src/test/scala/thoughtworks/sanitytest/SanityJavaTest.java
+@@ -0,0 +1,19 @@
++package thoughtworks.sanitytest;
++
++
++import org.junit.Test;
++
++import static org.junit.Assert.*;
++
++public class SanityJavaTest {
++
++    @Test
++    public void testTruth() {
++        assertEquals(true, true);
++    }
++
++    @Test
++    public void testFalse() {
++        assertNotEquals(true,false);
++    }
++}
+\ No newline at end of file
+diff --git a/src/test/scala/thoughtworks/wordcount/WordCountJavaTest.java b/src/test/scala/thoughtworks/wordcount/WordCountJavaTest.java
+new file mode 100644
+index 0000000..54bd201
+--- /dev/null
++++ b/src/test/scala/thoughtworks/wordcount/WordCountJavaTest.java
+@@ -0,0 +1,136 @@
++package thoughtworks.wordcount;
++
++import org.apache.commons.io.FileUtils;
++import org.apache.commons.io.filefilter.AndFileFilter;
++import org.apache.commons.io.filefilter.EmptyFileFilter;
++import org.apache.commons.io.filefilter.SuffixFileFilter;
++import org.apache.commons.io.filefilter.TrueFileFilter;
++import org.junit.Test;
++import thoughtworks.DefaultJavaTestWithSpark;
++
++import java.io.File;
++import java.io.IOException;
++import java.nio.file.Files;
++import java.nio.file.Path;
++import java.nio.file.StandardOpenOption;
++import java.util.*;
++import java.util.stream.Collectors;
++
++import static org.junit.Assert.assertEquals;
++
++public class WordCountJavaTest extends DefaultJavaTestWithSpark {
++    @Test
++    public void testItOutputsFilesContainingTheExpectedData() throws IOException {
++        assertEquals(true, true);
++//        Given("A simple input file, a Spark context, and a known output file")
++
++        Path rootDirectory = Files.createTempDirectory(this.getClass().getName());
++
++        Path inputFile = Files.createFile(rootDirectory.resolve("input.txt"));
++        Path outputDirectory = rootDirectory.resolve("output");
++        List<String> lines = Arrays.asList(
++                "It was the best of times,",
++                "it was the worst of times,",
++                "it was the age of wisdom,",
++                "it was the age of foolishness,"
++        );
++        Files.write(inputFile, lines, StandardOpenOption.CREATE);
++
++//        When("I trigger the application")
++
++        WordCountJava.run(spark,
++                inputFile.toUri().toString(),
++                outputDirectory.toUri().toString());
++
++//        Then("It outputs files containing the expected data")
++
++        Collection<File> files = FileUtils
++                .listFiles(outputDirectory.toFile(),
++                        new AndFileFilter(EmptyFileFilter.NOT_EMPTY,
++                                new SuffixFileFilter(".csv")),
++                        TrueFileFilter.TRUE);
++
++        Set<String> allLines = files.stream().collect(
++                HashSet<String>::new,
++                (s, file) -> {
++                    List<String> strings = null;
++                    try {
++                        strings = FileUtils.readLines(file);
++                    } catch (IOException e) {
++                        e.printStackTrace();
++                    }
++                    s.addAll(strings);
++                },
++                AbstractCollection::addAll
++        ).stream().map(String::trim).collect(Collectors.toSet());
++
++        Set<String> expectedLines = new HashSet<>(Arrays.asList("worst,1",
++                "times,2",
++                "was,4",
++                "age,2",
++                "it,4",
++                "foolishness,1",
++                "of,4",
++                "wisdom,1",
++                "best,1",
++                "the,4"));
++        assertEquals(expectedLines, allLines);
++        FileUtils.deleteDirectory(rootDirectory.toFile());
++    }
++
++    @Test
++    public void testItOutputsFilesContainParsedOrderedTheExpectedData() throws IOException {
++
++//        Given("A simple input file, a Spark context, and a known output file")
++        Path rootDirectory = Files.createTempDirectory(this.getClass().getName());
++
++
++        Path inputFile = Files.createFile(rootDirectory.resolve("input.txt"));
++        Path outputDirectory = rootDirectory.resolve("output");
++        List<String> lines = Arrays.asList(
++                "In my younger and more vulnerable years my father gave me some advice that I've been turning over in my mind ever since. \"Whenever you feel like criticising any one,\" he told me, \"just remember that all the people in this world haven't had the advantages that you've had.\"",
++                "Most of the big shore places were closed now and there were hardly any lights except the shadowy, moving glow of a ferryboat across the Sound. And as the moon rose higher the inessential houses began to melt away until gradually I became aware of the old island here that flowered once for Dutch sailors' eyes--a fresh, green breast of the new world. Its vanished trees, the trees that had made way for Gatsby's house, had once pandered in whispers to the last and greatest of all human dreams; for a transitory enchanted moment man must have held his breath in the presence of this continent, compelled into an aesthetic contemplation he neither understood nor desired, face to face for the last time in history with something commensurate to his capacity for wonder.",
++                "And as I sat there, brooding on the old unknown world, I thought of Gatsby's wonder when he first picked out the green light at the end of Daisy's dock. He had come a long way to this blue lawn and his dream must have seemed so close that he could hardly fail to grasp it. He did not know that it was already behind him, somewhere back in that vast obscurity beyond the city, where the dark fields of the republic rolled on under the night.",
++                "Gatsby believed in the green light, the orgastic future that year by year recedes before us. It eluded us then, but that's no matter--tomorrow we will run faster, stretch out our arms farther.... And one fine morning----",
++                "So we beat on, boats against the current, borne back ceaselessly into the past.      "
++        );
++        Files.write(inputFile, lines, StandardOpenOption.CREATE);
++
++//        When("I trigger the application")
++
++        WordCountJava.run(spark,
++                inputFile.toUri().toString(),
++                outputDirectory.toUri().toString());
++
++//        Then("It outputs files containing the parsed, ordered, expected data")
++
++        List<File> files = FileUtils
++                .listFiles(outputDirectory.toFile(),
++                        new AndFileFilter(EmptyFileFilter.NOT_EMPTY,
++                                new SuffixFileFilter(".csv")),
++                        TrueFileFilter.TRUE)
++                .stream().sorted().collect(Collectors.toList());
++
++        List<String> allLines = files.stream().collect(
++                        ArrayList<String>::new,
++                        (s, file) -> {
++                            List<String> strings = null;
++                            try {
++                                strings = FileUtils.readLines(file);
++                            } catch (IOException e) {
++                                e.printStackTrace();
++                            }
++                            s.addAll(strings);
++                        },
++                        AbstractCollection::addAll)
++                .stream()
++                .map(String::trim)
++                .collect(Collectors.toList());
++
++        List<String> expectedLines = Arrays.asList("a,4", "across,1", "advantages,1", "advice,1", "aesthetic,1", "against,1", "all,2", "already,1", "an,1", "and,7", "any,2", "arms,1", "as,2", "at,1", "aware,1", "away,1", "back,2", "beat,1", "became,1", "been,1", "before,1", "began,1", "behind,1", "believed,1", "beyond,1", "big,1", "blue,1", "boats,1", "borne,1", "breast,1", "breath,1", "brooding,1", "but,1", "by,1", "capacity,1", "ceaselessly,1", "city,1", "close,1", "closed,1", "come,1", "commensurate,1", "compelled,1", "contemplation,1", "continent,1", "could,1", "criticising,1", "current,1", "daisy's,1", "dark,1", "desired,1", "did,1", "dock,1", "dream,1", "dreams,1", "dutch,1", "eluded,1", "enchanted,1", "end,1", "ever,1", "except,1", "eyes,1", "face,2", "fail,1", "farther,1", "faster,1", "father,1", "feel,1", "ferryboat,1", "fields,1", "fine,1", "first,1", "flowered,1", "for,5", "fresh,1", "future,1", "gatsby,1", "gatsby's,2", "gave,1", "glow,1", "gradually,1", "grasp,1", "greatest,1", "green,3", "had,5", "hardly,2", "have,2", "haven't,1", "he,6", "held,1", "here,1", "higher,1", "him,1", "his,3", "history,1", "house,1", "houses,1", "human,1", "i,3", "i've,1", "in,8", "inessential,1", "into,2", "island,1", "it,3", "its,1", "just,1", "know,1", "last,2", "lawn,1", "light,2", "lights,1", "like,1", "long,1", "made,1", "man,1", "matter,1", "me,2", "melt,1", "mind,1", "moment,1", "moon,1", "more,1", "morning,1", "most,1", "moving,1", "must,2", "my,3", "neither,1", "new,1", "night,1", "no,1", "nor,1", "not,1", "now,1", "obscurity,1", "of,9", "old,2", "on,3", "once,2", "one,2", "orgastic,1", "our,1", "out,2", "over,1", "pandered,1", "past,1", "people,1", "picked,1", "places,1", "presence,1", "recedes,1", "remember,1", "republic,1", "rolled,1", "rose,1", "run,1", "sailors',1", "sat,1", "seemed,1", "shadowy,1", "shore,1", "since,1", "so,2", "some,1", "something,1", "somewhere,1", "sound,1", "stretch,1", "that,9", "that's,1", "the,24", "then,1", "there,2", "this,3", "thought,1", "time,1", "to,6", "told,1", "tomorrow,1", "transitory,1", "trees,2", "turning,1", "under,1", "understood,1", "unknown,1", "until,1", "us,2", "vanished,1", "vast,1", "vulnerable,1", "was,1", "way,2", "we,2", "were,2", "when,1", "whenever,1", "where,1", "whispers,1", "will,1", "with,1", "wonder,2", "world,3", "year,2", "years,1", "you,1", "you've,1", "younger,1");
++
++        assertEquals(expectedLines, allLines);
++        FileUtils.deleteDirectory(rootDirectory.toFile());
++
++    }
++}
+diff --git a/src/test/scala/thoughtworks/wordcount/WordCountUtilsJavaTest.java b/src/test/scala/thoughtworks/wordcount/WordCountUtilsJavaTest.java
+new file mode 100644
+index 0000000..c55a516
+--- /dev/null
++++ b/src/test/scala/thoughtworks/wordcount/WordCountUtilsJavaTest.java
+@@ -0,0 +1,55 @@
++package thoughtworks.wordcount;
++
++import org.junit.Test;
++import thoughtworks.DefaultJavaTestWithSpark;
++
++public class WordCountUtilsJavaTest extends DefaultJavaTestWithSpark {
++    @Test
++    public void testItOutputsFilesContainingTheExpectedData() {
++
++    }
++
++    @Test
++    public void testSplittingADatasetOfWordsBySpaces() {
++
++    }
++
++    @Test
++    public void testSplittingADatasetOfWordsByPeriod() {
++
++    }
++
++    @Test
++    public void testSplittingADatasetOfWordsByComma() {
++
++    }
++
++    @Test
++    public void testSplittingADatasetOfWordsByHypen() {
++
++    }
++
++    @Test
++    public void testSplittingADatasetOfWordsBySemiColon() {
++
++    }
++
++    @Test
++    public void testCountWordsBasicTestcase() {
++    }
++
++    @Test
++    public void testCountWordsShouldNotAggregateDissimilarWords() {
++
++    }
++
++    @Test
++    public void testCountWordsWithTestcaseOfInsensitivity() {
++
++    }
++
++    @Test
++    public void testSortWordsOrderingWords() {
++
++    }
++}
+-- 
+2.27.0
+
