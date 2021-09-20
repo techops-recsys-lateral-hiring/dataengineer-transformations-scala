@@ -1,12 +1,12 @@
 # Data transformations with Java or Scala
 
-This is a collection of _Scala_ jobs that are supposed to transform data.
+This is a collection of jobs that are supposed to transform data.
 These jobs are using _Spark_ to process larger volumes of data and are supposed to run on a _Spark_ cluster (via `spark-submit`).
 
 ## Pre-requisites
 Please make sure you have the following installed
 * Java 8
-* Scala 2.11
+* Scala 2.12
 * Sbt 1.1.x
 * Apache Spark 2.4 with ability to run spark-submit
 
