@@ -3,6 +3,8 @@ scalaVersion := "2.12.4"
 
 val sparkVersion = "2.4.0"
 
+useCoursier := false
+
 lazy val root = (project in file(".")).
   settings(
     inThisBuild(List(
@@ -22,6 +24,4 @@ lazy val root = (project in file(".")).
 
     )
   )
-testOptions in Test := Seq(Tests.Argument(TestFrameworks.JUnit, "-a"))
-fork in run := true
 

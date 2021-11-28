@@ -1,4 +1,4 @@
-"tripduration","starttime","stoptime","start station id","start station name","start station latitude","start station longitude","end station id","end station name","end station latitude","end station longitude","bikeid","usertype","birth year","gender"
+	"tripduration","starttime","stoptime","start station id","start station name","start station latitude","start station longitude","end station id","end station name","end station latitude","end station longitude","bikeid","usertype","birth year","gender"
 364,"2017-07-01 00:00:00","2017-07-01 00:06:05",539,"Metropolitan Ave & Bedford Ave",40.71534825,-73.96024116,3107,"Bedford Ave & Nassau Ave",40.72311651,-73.95212324,14744,"Subscriber",1986,1
 2142,"2017-07-01 00:00:03","2017-07-01 00:35:46",293,"Lafayette St & E 8 St",40.73020660529954,-73.99102628231049,3425,"2 Ave  & E 104 St",40.7892105,-73.94370784,19587,"Subscriber",1981,1
 328,"2017-07-01 00:00:08","2017-07-01 00:05:37",3242,"Schermerhorn St & Court St",40.69102925677968,-73.99183362722397,3397,"Court St & Nelson St",40.6763947,-73.99869893,27937,"Subscriber",1984,2
