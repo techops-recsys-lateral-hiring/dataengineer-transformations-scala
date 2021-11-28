@@ -1,7 +1,6 @@
 ARG PYTHON_VERSION=3.9.4
 FROM python:$PYTHON_VERSION
 
-COPY . /app
 USER root
 WORKDIR /opt
 #RUN wget https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.11%2B9/OpenJDK11U-jdk_x64_linux_hotspot_11.0.11_9.tar.gz && \
@@ -21,7 +20,5 @@ ENV PATH="/opt/jdk1.8.0_131/bin:/opt/scala-2.13.5/bin:/opt/spark-3.1.1-bin-hadoo
 #TODO : Change the user to non root user
 #USER 185
 WORKDIR /app
-
-ENTRYPOINT ["tail", "-f", "/dev/null"]
 
 

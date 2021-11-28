@@ -31,3 +31,4 @@ tasks:
       entrypoint: scripts/run-job.sh
       environment:
         JOB: $JOB
+        INPUT_FILE_PATH: $INPUT_FILE_PATH

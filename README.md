@@ -65,12 +65,12 @@ A single `*.csv` file containing data similar to:
 "an","5"
 ...
 ```
-
+`
 #### Run the job
 
 ```bash
 INPUT_FILE_PATH="src/test/resources/data/words.txt" JOB=thoughtworks.wordcount.WordCount ./batect run-job
-```
+````
 
 ### Citibike
 For analytics purposes the BI department of a bike share company would like to present dashboards, displaying the
