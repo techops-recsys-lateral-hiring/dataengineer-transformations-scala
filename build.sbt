@@ -3,7 +3,6 @@ scalaVersion := "2.12.4"
 
 val sparkVersion = "2.4.0"
 
-useCoursier := false
 
 lazy val root = (project in file(".")).
   settings(

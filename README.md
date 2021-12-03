@@ -1,4 +1,4 @@
-# Data transformations with Java or Scala
+# Data transformations with Scala
 
 This is a collection of jobs that are supposed to transform data.
 These jobs are using _Spark_ to process larger volumes of data and are supposed to run on a _Spark_ cluster (via `spark-submit`).

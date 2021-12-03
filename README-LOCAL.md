@@ -55,7 +55,7 @@ file needs to be processed in multiple steps. There is a pipeline running these 
 
 ![citibike pipeline](docs/citibike.png)
 
-There is a dump of the datalake for this under `test/resources/citibike/citibike.csv` with historical data.
+There is a dump of the datalake for this under `test/resources/data/citibike.csv` with historical data.
 
 ### Ingest
 Reads a `*.csv` file and transforms it to parquet format. The column names will be sanitized (whitespaces replaced).
