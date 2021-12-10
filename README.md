@@ -9,7 +9,7 @@ We use [`batect`](https://batect.dev/) to dockerise the tasks in this exercise.
 `batect` is a lightweight wrapper around Docker that helps to ensure tasks run consistently (across linux, mac windows).
 With `batect`, the only dependencies that need to be installed are Docker and Java >=8. Every other dependency is managed inside Docker containers.
 Please make sure you have the following installed and can run them
-* Docker
+* Docker (greater than 4.0.0)
 * Java (1.8)
 
 You could use following instructions as guidelines to install Docker and Java.
