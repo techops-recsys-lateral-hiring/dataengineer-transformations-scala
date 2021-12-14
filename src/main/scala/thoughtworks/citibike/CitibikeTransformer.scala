@@ -13,7 +13,6 @@ object CitibikeTransformer {
     val spark = SparkSession.builder.appName("Citibike Transformer").getOrCreate()
     log.info("Citibike Transformer Application Initialized: " + spark.sparkContext.appName)
 
-
     run(spark, ingestPath, transformationPath)
 
     log.info("Citibike Application Done: " + spark.sparkContext.appName)

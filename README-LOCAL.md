@@ -4,55 +4,30 @@ This is a collection of jobs that are supposed to transform data.
 These jobs are using _Spark_ to process larger volumes of data and are supposed to run on a _Spark_ cluster (via `spark-submit`).
 
 ## Pre-requisites
+Please make sure you have the following installed
+* Java 8
+* Scala 2.12
+* Sbt 1.1.x
+* Apache Spark 2.4 with ability to run spark-submit
 
-We use [`batect`](https://batect.dev/) to dockerise the tasks in this exercise.
-`batect` is a lightweight wrapper around Docker that helps to ensure tasks run consistently (across linux, mac windows).
-With `batect`, the only dependencies that need to be installed are Docker and Java >=8. Every other dependency is managed inside Docker containers.
-Please make sure you have the following installed and can run them
-* Docker (greater than 4.0.0)
-* Java (1.8)
-
-You could use following instructions as guidelines to install Docker and Java.
-
-```bash
-# Install pre-requisites needed by batect
-# For mac users:
-scripts/install.sh
-
-# For windows/linux users:
-# Please ensure Docker and java >=8 is installed
-scripts\install_choco.ps1
-scripts\install.bat
-```
-
-## Run tests
-
-### Run unit tests
-```bash
-./batect unit-test
-```
-
-
-## Run style checks
-```bash
-./batect style-checks
-```
-This is running the scalacheckstyle with default setting
-
+## Setup Process
+* Clone the repo
+* Package the project with `sbt package`
+* Ensure that you're able to run the tests with `sbt test` (some are ignored)
+* Sample data is available in the `src/test/resource/data` directory
 
 ## Jobs
-
 There are two applications in this repo: Word Count, and Citibike.
 
-Currently, these exist as skeletons, and have some initial test cases which are defined but ignored.
+Currently these exist as skeletons, and have some initial test cases which are defined but ignored.
 For each application, please un-ignore the tests and implement the missing logic.
 
-### Word Count
+## Wordcount
 A NLP model is dependent on a specific input file. This job is supposed to preprocess a given text file to produce this
 input file for the NLP model (feature engineering). This job will count the occurrences of a word within the given text
 file (corpus).
 
-There is a dump of the datalake for this under `/src/test/resources/data/words.txt` with a text file.
+There is a dump of the data lake for this under `test/resources/data/words.txt` with a text file.
 
 #### Input
 Simple `*.txt` file containing text.
@@ -65,23 +40,24 @@ A single `*.csv` file containing data similar to:
 "an","5"
 ...
 ```
-`
-#### Run the job
 
-```bash
-INPUT_FILE_PATH="src/test/resources/data/words.txt" JOB=thoughtworks.wordcount.WordCount ./batect run-job
-````
+#### Run the Scala version of job
+Please make sure to package the code before submitting the spark job
+```
+spark-submit --class thoughtworks.wordcount.WordCount --master local target/scala-2.12/tw-pipeline_2.12-0.1.0-SNAPSHOT.jar
+```
 
-### Citibike
+
+## Citibike
 For analytics purposes the BI department of a bike share company would like to present dashboards, displaying the
 distance each bike was driven. There is a `*.csv` file that contains historical data of previous bike rides. This input
 file needs to be processed in multiple steps. There is a pipeline running these jobs.
 
 ![citibike pipeline](docs/citibike.png)
 
-There is a dump of the datalake for this under `/src/test/resources/data/citibike.csv` with historical data.
+There is a dump of the datalake for this under `test/resources/data/citibike.csv` with historical data.
 
-#### Ingest
+### Ingest
 Reads a `*.csv` file and transforms it to parquet format. The column names will be sanitized (whitespaces replaced).
 
 ##### Input
@@ -100,18 +76,17 @@ Historical bike ride `*.csv` file:
 ...
 ```
 
-##### Run the job
-
-```bash
-INPUT_FILE_PATH="src/test/resources/data/citibike.csv" JOB=thoughtworks.ingest.DailyDriver ./batect run-job
+##### Run the Scala version of job
+Please make sure to package the code before submitting the spark job
+```
+spark-submit --class thoughtworks.ingest.DailyDriver --master local target/scala-2.12/tw-pipeline_2.12-0.1.0-SNAPSHOT.jar $(INPUT_LOCATION) $(OUTPUT_LOCATION)
 ```
 
-#### Distance calculation
+### Distance calculation
 This job takes bike trip information and calculates the "as the crow flies" distance traveled for each trip.
 It reads the previously ingested data parquet files.
 
-Hint:
- - For distance calculation, consider using [**Harvesine formula**](https://en.wikipedia.org/wiki/Haversine_formula) as an option.
+Hint: For distance calculation, consider using [**Harvesine formula**](https://en.wikipedia.org/wiki/Haversine_formula) as an option.
 
 ##### Input
 Historical bike ride `*.parquet` files
@@ -129,12 +104,8 @@ Historical bike ride `*.parquet` files
 ...
 ```
 
-##### Run the job
-
-```bash
-INPUT_FILE_PATH=${output_parquest_ingest} JOB=thoughtworks.citibike.CitibikeTransformer ./batect run-job
+##### Run the Scala version of job
+Please make sure to package the code before submitting the spark job
 ```
-
-## Running the code outside container
-
-If you would like to run the code in your laptop locally without containers then please follow instructions (README-LOCAL.md).
+spark-submit --class thoughtworks.citibike.CitibikeTransformer --master local target/scala-2.12/tw-pipeline_2.12-0.1.0-SNAPSHOT.jar $(INPUT_LOCATION) $(OUTPUT_LOCATION)
+```

@@ -3,6 +3,7 @@ scalaVersion := "2.12.4"
 
 val sparkVersion = "2.4.0"
 
+
 lazy val root = (project in file(".")).
   settings(
     inThisBuild(List(
@@ -19,9 +20,7 @@ lazy val root = (project in file(".")).
       "com.typesafe" % "config" % "1.3.2",
       "org.scalatest" %% "scalatest" % "3.0.5" % "test",
       "junit" % "junit" % "4.13.2" % Test,
-      "com.novocode" % "junit-interface" % "0.11" % Test
+
     )
   )
-testOptions in Test := Seq(Tests.Argument(TestFrameworks.JUnit, "-a"))
-fork in run := true
 
