@@ -8,7 +8,7 @@ Please make sure you have the following installed
 * Java 8
 * Scala 2.12
 * Sbt 1.3.x
-* Apache Spark 2.4 with ability to run spark-submit
+* Apache Spark 3.2 with ability to run spark-submit
 
 ## Setup Process
 * Clone the repo
