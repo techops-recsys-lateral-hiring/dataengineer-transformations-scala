@@ -7,7 +7,7 @@ These jobs are using _Spark_ to process larger volumes of data and are supposed 
 Please make sure you have the following installed
 * Java 8
 * Scala 2.12
-* Sbt 1.1.x
+* Sbt 1.3.x
 * Apache Spark 2.4 with ability to run spark-submit
 
 ## Setup Process
