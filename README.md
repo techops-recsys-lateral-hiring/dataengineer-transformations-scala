@@ -69,7 +69,7 @@ A single `*.csv` file containing data similar to:
 #### Run the job
 
 ```bash
-INPUT_FILE_PATH="src/test/resources/data/words.txt" JOB=thoughtworks.wordcount.WordCount ./batect run-job
+INPUT_FILE_PATH="src/test/resources/data/words.txt" OUTPUT_PATH="output" JOB=thoughtworks.wordcount.WordCount ./batect run-job
 ````
 
 ### Citibike
@@ -103,7 +103,7 @@ Historical bike ride `*.csv` file:
 ##### Run the job
 
 ```bash
-INPUT_FILE_PATH="src/test/resources/data/citibike.csv" JOB=thoughtworks.ingest.DailyDriver ./batect run-job
+INPUT_FILE_PATH="src/test/resources/data/citibike.csv" OUTPUT_PATH="output_parquet_ingest" JOB=thoughtworks.ingest.DailyDriver ./batect run-job
 ```
 
 #### Distance calculation
@@ -132,7 +132,7 @@ Historical bike ride `*.parquet` files
 ##### Run the job
 
 ```bash
-INPUT_FILE_PATH=${output_parquest_ingest} JOB=thoughtworks.citibike.CitibikeTransformer ./batect run-job
+INPUT_FILE_PATH="output_parquet_ingest" OUTPUT_PATH="output" JOB=thoughtworks.citibike.CitibikeTransformer ./batect run-job
 ```
 
 ## Running the code outside container
