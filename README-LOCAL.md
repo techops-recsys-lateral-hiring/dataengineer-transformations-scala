@@ -19,8 +19,8 @@ Please make sure you have the following installed
 ## Jobs
 There are two applications in this repo: Word Count, and Citibike.
 
-Currently these exist as skeletons, and have some initial test cases which are defined but ignored.
-For each application, please un-ignore the tests and implement the missing logic.
+Currently, these exist as skeletons, and have some initial test cases which are defined but ignored.
+For each application, you will un-ignore the tests and implement the missing logic.
 
 ## Wordcount
 A NLP model is dependent on a specific input file. This job is supposed to preprocess a given text file to produce this
