@@ -14,21 +14,28 @@ tasks:
     group: Test
     run:
       container: scalaspark
-      entrypoint: scripts/unit-test.sh
+      entrypoint: scripts/mac_or_linux/unit-test.sh
+
+  integration-test:
+    description: Integration tests
+    group: Test
+    run:
+      container: scalaspark
+      entrypoint: scripts/mac_or_linux/integration-test.sh
 
   style-checks:
     description: Lint and type check
     group: Test
     run:
       container: scalaspark
-      entrypoint: scripts/style-checks.sh
+      entrypoint: scripts/mac_or_linux/style-checks.sh
 
   run-job:
     description: Run spark job
     group: Run
     run:
       container: scalaspark
-      entrypoint: scripts/run-job.sh
+      entrypoint: scripts/mac_or_linux/run-job.sh
       environment:
         JOB: $JOB
         INPUT_FILE_PATH: $INPUT_FILE_PATH

@@ -1,18 +1,16 @@
-ARG PYTHON_VERSION=3.9.4
-FROM python:$PYTHON_VERSION
+FROM sbtscala/scala-sbt:eclipse-temurin-11.0.15_1.7.1_2.13.8 AS build
 
+#ENV SBT_VERSION 1.7.1
 USER root
 WORKDIR /opt
-RUN wget -c --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.tar.gz && \
-    wget https://downloads.lightbend.com/scala/2.13.5/scala-2.13.5.tgz && \
-    wget https://archive.apache.org/dist/spark/spark-3.1.1/spark-3.1.1-bin-hadoop3.2.tgz && \
-    wget https://github.com/sbt/sbt/releases/download/v1.3.0/sbt-1.3.0.tgz
-RUN tar xzf jdk-8u131-linux-x64.tar.gz && \
-    tar xvf scala-2.13.5.tgz && \
-    tar xvf spark-3.1.1-bin-hadoop3.2.tgz && \
-    tar xvf sbt-1.3.0.tgz
-ENV PATH="/opt/jdk1.8.0_131/bin:/opt/scala-2.13.5/bin:/opt/spark-3.1.1-bin-hadoop3.2/bin:/opt/sbt/bin:/opt/sbt/bin$PATH"
+RUN  apt-get update \
+  && apt-get install -y wget \
+  && rm -rf /var/lib/apt/lists/*
+RUN wget https://archive.apache.org/dist/spark/spark-3.2.2/spark-3.2.2-bin-hadoop3.2.tgz
+RUN tar xvf spark-3.2.2-bin-hadoop3.2.tgz
+ENV PATH="/opt/spark-3.2.2-bin-hadoop3.2/bin:$PATH"
 
+#TODO : Change the user to non root user
+#USER 185
 WORKDIR /app
-
-
+ENTRYPOINT ["tail", "-f", "/dev/null"]
