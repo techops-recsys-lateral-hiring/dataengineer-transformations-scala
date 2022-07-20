@@ -1,1 +1,1 @@
-./gradlew clean test -x checkStyleMain -x checkStyleTest
+sbt clean test

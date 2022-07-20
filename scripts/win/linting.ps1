@@ -1,9 +1,5 @@
-#!/bin/bash
+Write-Output "Creating the Scalastyle-config.xml with  default setting checks "
+sbt scalastyleGenerateConfig
 
-set -e
-
-echo "Running checkstyle on Java source files"
-./gradlew checkstyleMain
-
-echo "Running checkstyle on the test Java source files"
-./gradlew checkstyleTest
+Write-Output "Running scala check"
+sbt scalastyle

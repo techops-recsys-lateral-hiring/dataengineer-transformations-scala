@@ -6,9 +6,9 @@ WORKDIR /opt
 RUN  apt-get update \
   && apt-get install -y wget \
   && rm -rf /var/lib/apt/lists/*
-RUN wget https://archive.apache.org/dist/spark/spark-3.2.2/spark-3.2.2-bin-hadoop3.2.tgz
-RUN tar xvf spark-3.2.2-bin-hadoop3.2.tgz
-ENV PATH="/opt/spark-3.2.2-bin-hadoop3.2/bin:$PATH"
+RUN wget https://archive.apache.org/dist/spark/spark-3.3.0/spark-3.3.0-bin-hadoop3.tgz
+RUN tar xvf spark-3.3.0-bin-hadoop3.tgz
+ENV PATH="/opt/spark-3.3.0-bin-hadoop3/bin:$PATH"
 
 #TODO : Change the user to non root user
 #USER 185
