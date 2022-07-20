@@ -5,9 +5,9 @@ These jobs are using _Spark_ to process larger volumes of data and are supposed 
 
 ## Pre-requisites
 Please make sure you have the following installed
-* Java 8
-* Scala 2.13.5
-* Sbt 1.3.x
+* Java 11
+* Scala 2.12.16
+* Sbt 1.7.x
 * Apache Spark 3.3 with ability to run spark-submit
 
 ## Setup Process
@@ -63,7 +63,7 @@ file needs to be processed in multiple steps. There is a pipeline running these 
 
 ![citibike pipeline](docs/citibike.png)
 
-There is a dump of the datalake for this under `test/resources/data/citibike.csv` with historical data.
+There is a dump of the datalake for this under `resources/data/citibike.csv` with historical data.
 
 ### Ingest
 

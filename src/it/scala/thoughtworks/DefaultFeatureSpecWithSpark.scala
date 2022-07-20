@@ -17,51 +17,19 @@
 package thoughtworks
 
 import org.apache.spark.sql.{SparkSession, SQLContext, SQLImplicits}
-import org.scalatest.{BeforeAndAfterAll, GivenWhenThen, Suite}
+import org.scalatest.{BeforeAndAfterAll, GivenWhenThen, ParallelTestExecution, Suite}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 
-trait DefaultFeatureSpecWithSpark extends  BeforeAndAfterAll with Matchers { self: Suite =>
+trait DefaultFeatureSpecWithSpark extends  Matchers  { self: Suite =>
 
-  private var _spark: SparkSession = null
 
-  protected implicit def spark: SparkSession = _spark
+   lazy val spark: SparkSession = {
+     SparkSession.builder
+       .appName("Spark Test App")
+       .config("spark.driver.host","127.0.0.1")
+       .master("local")
+       .getOrCreate()
+   }
 
-  protected object testImplicits extends SQLImplicits {
-    protected override def _sqlContext: SQLContext = self.spark.sqlContext
-  }
-
-  override protected def beforeAll(): Unit = {
-    if (_spark == null) {
-      _spark = SparkSession.builder
-        .appName("Spark Test App")
-        .config("spark.driver.host","127.0.0.1")
-        .master("local")
-        .getOrCreate()
-      print("beforeAll")
-    }
-
-    super.beforeAll()
-  }
-
-  protected override def afterAll(): Unit = {
-    try {
-      super.afterAll()
-    } finally {
-      try {
-        if (_spark != null) {
-          try {
-            _spark.sessionState.catalog.reset()
-          } finally {
-            _spark.stop()
-            _spark = null
-          }
-        }
-      } finally {
-        SparkSession.clearActiveSession()
-        SparkSession.clearDefaultSession()
-        print("afterAll")
-      }
-    }
-  }
 }

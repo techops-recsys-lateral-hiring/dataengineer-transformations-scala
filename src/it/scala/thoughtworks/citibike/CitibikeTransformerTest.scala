@@ -24,7 +24,7 @@ import thoughtworks.DefaultFeatureSpecWithSpark
 
 import java.nio.file.Files
 
-class CitibikeTransformerTest extends AnyFeatureSpec with DefaultFeatureSpecWithSpark with GivenWhenThen  {
+class CitibikeTransformerTest extends AnyFeatureSpec with DefaultFeatureSpecWithSpark with GivenWhenThen {
 
   val citibikeBaseSchema = List(
     StructField("tripduration", IntegerType, nullable = true),

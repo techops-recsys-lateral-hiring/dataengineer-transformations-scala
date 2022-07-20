@@ -1,4 +1,4 @@
-FROM sbtscala/scala-sbt:eclipse-temurin-11.0.15_1.7.1_2.13.8 AS build
+FROM sbtscala/scala-sbt:eclipse-temurin-11.0.15_1.7.1_2.12.16 AS build
 
 #ENV SBT_VERSION 1.7.1
 USER root

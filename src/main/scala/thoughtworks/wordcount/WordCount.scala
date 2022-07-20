@@ -28,9 +28,14 @@ object WordCount {
   def main(args: Array[String]): Unit = {
     val spark = SparkSession.builder.appName("Word Count").getOrCreate()
     log.info("Application Initialized: " + spark.sparkContext.appName)
+    val numberOfInputs = args.length
+    log.info("arguments passed: " + numberOfInputs)
+    log.info("argument 1: " + args(0))
+    log.info("argument 2: " + args(1))
+
 
     val inputPath = if(!args.isEmpty) args(0) else "./src/test/resources/data/words.txt"
-    val outputPath = if(args.length > 1) args(1) else "./target/test-" + LocalDateTime.now()
+    val outputPath = if(numberOfInputs > 1) args(1) else "./target/test-" + LocalDateTime.now()
 
     run(spark, inputPath, outputPath)
 

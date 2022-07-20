@@ -2,23 +2,24 @@
 
 set -euo pipefail
 
-./gradlew clean build
+sbt clean package
 
+scalaVersion=2.12
 originalJob="${JOB:-""}"
 jobName=$(echo "${originalJob}" | awk '{ print tolower($1) }')
-JAR=build/libs/dataengineer.jar
+JAR=target/scala-"${scalaVersion}"/tw-pipeline_"${scalaVersion}"-0.1.0-SNAPSHOT.jar
 
 if [[ "${jobName}" == "citibike_ingest" ]]; then
-    JOB=com.thoughtworks.de.ingest.DailyDriver
-    INPUT_FILE_PATH="./resources/citibike/citibike.csv"
+    JOB=thoughtworks.ingest.DailyDriver
+    INPUT_FILE_PATH="./src/main/resources/data/citibike.csv"
     OUTPUT_PATH="./output_int"
 elif [[ "${jobName}" == "citibike_distance_calculation" ]]; then
-    JOB=com.thoughtworks.de.citibike.CitibikeTransformer
+    JOB=thoughtworks.citibike.CitibikeTransformer
     INPUT_FILE_PATH="./output_int"
     OUTPUT_PATH="./output"
 elif [[ "${jobName}" == "wordcount" ]]; then
-    JOB=com.thoughtworks.de.wordcount.WordCount
-    INPUT_FILE_PATH="./resources/word_count/words.txt"
+    JOB=thoughtworks.wordcount.WordCount
+    INPUT_FILE_PATH="./src/main/resources/data/words.txt"
     OUTPUT_PATH="./output"
 else
   echo "Job name provided was : ${originalJob} : failed"
@@ -28,6 +29,10 @@ else
 fi
 
 rm -rf $OUTPUT_PATH
+echo "Executing Job : ${originalJob}"
+echo "Jar : ${JAR}"
+echo "Input : ${INPUT_FILE_PATH}"
+echo "Output : ${OUTPUT_PATH}"
 
 
 spark-submit \
