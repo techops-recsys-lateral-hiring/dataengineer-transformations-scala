@@ -14,19 +14,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package thoughtworks.wordcount
+package thoughtworks
 
-import org.apache.spark.sql.{Dataset, SparkSession}
+import org.apache.spark.sql.{SparkSession, SQLContext, SQLImplicits}
+import org.scalatest.{BeforeAndAfterAll, GivenWhenThen, ParallelTestExecution, Suite}
+import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.matchers.should.Matchers
 
-object WordCountUtils {
-  implicit class StringDataset(val dataSet: Dataset[String]) {
-    def splitWords(spark: SparkSession): Dataset[String] = {
-      dataSet
-    }
+trait DefaultFeatureSpecWithSpark extends  Matchers  { self: Suite =>
 
-    def countByWord(spark: SparkSession): Dataset[String] = {
-      import spark.implicits._
-      dataSet.as[String]
-    }
-  }
+
+   lazy val spark: SparkSession = {
+     SparkSession.builder
+       .appName("Spark Test App")
+       .config("spark.driver.host","127.0.0.1")
+       .master("local")
+       .getOrCreate()
+   }
+
 }

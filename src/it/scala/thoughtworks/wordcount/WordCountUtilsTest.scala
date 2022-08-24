@@ -16,17 +16,33 @@
 
 package thoughtworks.wordcount
 
-import org.apache.spark.sql.{Dataset, SparkSession}
+import org.scalatest.featurespec.AnyFeatureSpec
+import thoughtworks.DefaultFeatureSpecWithSpark
 
-object WordCountUtils {
-  implicit class StringDataset(val dataSet: Dataset[String]) {
-    def splitWords(spark: SparkSession): Dataset[String] = {
-      dataSet
-    }
 
-    def countByWord(spark: SparkSession): Dataset[String] = {
-      import spark.implicits._
-      dataSet.as[String]
-    }
+class WordCountUtilsTest extends AnyFeatureSpec with DefaultFeatureSpecWithSpark {
+  Feature("Split Words") {
+    ignore("test splitting a dataset of words by spaces") {}
+
+    ignore("test splitting a dataset of words by period") {}
+
+    ignore("test splitting a dataset of words by comma") {}
+
+    ignore("test splitting a dataset of words by hypen") {}
+
+    ignore("test splitting a dataset of words by semi-colon") {}
   }
+
+  Feature("Count Words") {
+    ignore("basic test case") {}
+
+    ignore("should not aggregate dissimilar words") {}
+
+    ignore("test case insensitivity") {}
+  }
+
+  Feature("Sort Words") {
+    ignore("test ordering words") {}
+  }
+
 }
