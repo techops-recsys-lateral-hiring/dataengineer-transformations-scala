@@ -121,7 +121,7 @@ JOB=wordcount ./go.sh run-docker-desktop-job
 #### Run the job using Docker Desktop on Windows
 
 ```bash
-$env:JOB = wordcount 
+$env:JOB = "wordcount" 
 .\go.ps1 run-docker-desktop-job 
 ```
 
@@ -225,7 +225,7 @@ JOB=citibike_distance_calculation ./go.sh run-docker-desktop-job
 ##### Run the job using Docker Desktop on Windows
 
 ```bash
-$env:JOB = citibike_distance_calculation 
+$env:JOB = "citibike_distance_calculation" 
 .\go.ps1 run-docker-desktop-job
 ```
 
