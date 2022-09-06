@@ -5,3 +5,5 @@
 tasks:
   - init: |
       pip install pyspark==3.3.0
+      sdk install sbt
+      sbt test
