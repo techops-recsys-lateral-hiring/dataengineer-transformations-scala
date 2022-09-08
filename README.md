@@ -241,7 +241,9 @@ If you would like to run the code in your laptop locally without containers then
 instructions [here](README-LOCAL.md).
 
 ## Running the code on Gitpod
-Alternatively, you can setup the environment using [**Gitpod**](https://gitpod.io/)
+Alternatively, you can setup the environment using   
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/techops-recsys-lateral-hiring/dataengineer-transformations-scala)
 
 It's recommend that you setup ssh to Gitpod so that you can use VS Code from local to remote to Gitpod. 
 
