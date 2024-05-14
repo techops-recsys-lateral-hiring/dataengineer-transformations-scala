@@ -8,7 +8,7 @@ lazy val root = (project in file("."))
   .configs(Test)
   .settings(
     inThisBuild(List(
-      organization := "com.thoughtworks.cd.de",
+      organization := "com.thoughtworks",
       scalaVersion := "2.12.16",
       version := "0.1.0-SNAPSHOT"
     )),
