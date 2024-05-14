@@ -35,7 +35,7 @@ object DailyDriver {
     spark.stop()
   }
 
-  private def getInputAndOutputPaths(args: Array[String]) = {
+  private def getInputAndOutputPaths(args: Array[String]): (String, String) = {
     if (args.length < 2) {
       log.warn("Input source and output path are required")
       System.exit(1)

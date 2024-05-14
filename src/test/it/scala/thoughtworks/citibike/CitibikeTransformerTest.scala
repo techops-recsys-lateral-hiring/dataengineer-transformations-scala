@@ -73,10 +73,6 @@ class CitibikeTransformerTest extends AnyFunSuite with DefaultFeatureSpecWithSpa
 
 
   ignore("should compute the distance column correctly") {
-    val rootDirectory = Files.createTempDirectory(this.getClass.getName + "Citibike")
-    val ingestedDir = rootDirectory.resolve("ingest")
-    val transformedDir = rootDirectory.resolve("transform")
-
     val (ingestDir, transformDir) = makeInputAndOutputDirectories()
     val inputDF: DataFrame = spark.createDataFrame(spark.sparkContext.parallelize(sampleCitibikeData),
       StructType(citibikeBaseSchema))
