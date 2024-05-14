@@ -13,56 +13,46 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package thoughtworks.ingest
+package it.scala.thoughtworks.ingest
 
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.types.{IntegerType, StructField, StructType}
-import org.scalatest.{GivenWhenThen, Suite}
-import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.funsuite.AnyFunSuite
 import thoughtworks.DefaultFeatureSpecWithSpark
+import thoughtworks.ingest.DailyDriver
 
 import java.nio.file.Files
 
-class DailyDriverTest extends AnyFeatureSpec with DefaultFeatureSpecWithSpark with GivenWhenThen  {
 
-  Feature("Daily Driver Ingestion") {
-    Scenario("Daily Driver Ingestion - Normal use") {
-      Given("Input data in the expected format")
+class DailyDriverTest extends AnyFunSuite with DefaultFeatureSpecWithSpark {
 
-      val rootDirectory = Files.createTempDirectory(this.getClass.getName)
+  test("input data should be in expected format") {
+    val rootDirectory = Files.createTempDirectory(this.getClass.getName)
+    val inputCsv = rootDirectory.toUri.toString + "input.csv"
+    val outputDirectory = rootDirectory.resolve("output")
+    val csvRows = Seq(
+      Row(3,1,4,3),
+      Row(1,5,2,4)
+    )
+    val csvSchema = List(
+      StructField("first_field", IntegerType, nullable = true),
+      StructField("field with space", IntegerType, nullable = true),
+      StructField(" fieldWithOuterSpaces ", IntegerType, nullable = true),
+      StructField("field_With0ut_Spaces", IntegerType, nullable = true),
+    )
+    val inputDataFrame = spark.createDataFrame(spark.sparkContext.parallelize(csvRows),
+      StructType(csvSchema))
+    inputDataFrame.write
+      .option("header",value = true)
+      .option("quoteAll", value = true)
+      .option("ignoreLeadingWhiteSpace", value = false)
+      .option("ignoreTrailingWhiteSpace", value = false)
+      .csv(inputCsv)
 
-      val inputCsv = rootDirectory.toUri.toString + "input.csv"
-      val outputDirectory = rootDirectory.resolve("output")
-
-      val csvRows = Seq(
-        Row(3,1,4),
-        Row(1,5,2)
-      )
-
-      val csvSchema = List(
-        StructField("first_field", IntegerType, nullable = true),
-        StructField("field with space", IntegerType, nullable = true),
-        StructField(" fieldWithOuterSpaces ", IntegerType, nullable = true),
-      )
-
-      val inputDataFrame = spark.createDataFrame(spark.sparkContext.parallelize(csvRows),
-        StructType(csvSchema))
-      inputDataFrame.write
-        .option("header",value = true)
-        .option("quoteAll", value = true)
-        .option("ignoreLeadingWhiteSpace", value = false)
-        .option("ignoreTrailingWhiteSpace", value = false)
-        .csv(inputCsv)
-
-      When("Daily Driver Ingestion is run")
-      DailyDriver.run(spark, inputCsv, outputDirectory.toUri.toString)
-
-      Then("The data is stored in Parquet format with both rows")
-      val parquetDirectory = spark.read.parquet(outputDirectory.toUri.toString)
-      parquetDirectory.count should be (2)
-
-      And("The column headers are renamed")
-      parquetDirectory.columns should be (Array("first_field", "field_with_space", "_fieldWithOuterSpaces_"))
-    }
+    DailyDriver.run(spark, inputCsv, outputDirectory.toUri.toString)
+    val parquetDirectory = spark.read.parquet(outputDirectory.toUri.toString)
+    parquetDirectory.count should be (2)
+    parquetDirectory.columns should be (Array("first_field", "field_with_space", "_fieldWithOuterSpaces_", "field_With0ut_Spaces"))
   }
+
 }
