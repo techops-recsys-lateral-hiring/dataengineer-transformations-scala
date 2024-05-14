@@ -52,7 +52,7 @@ class CitibikeTransformerTest extends AnyFunSuite with DefaultFeatureSpecWithSpa
       , "E 20 St & FDR Drive", 40.73314259, -73.97573881, 27084, "Subscriber", 1990, 2)
   )
 
-  test("Citibike Transformer Should Maintain All Of The Data It Read") {
+  test("should Maintain All Of The Data It Read") {
 
     val (ingestDir, transformDir) = makeInputAndOutputDirectories()
     val inputDF: DataFrame = spark.createDataFrame(spark.sparkContext.parallelize(sampleCitibikeData),
@@ -72,7 +72,7 @@ class CitibikeTransformerTest extends AnyFunSuite with DefaultFeatureSpecWithSpa
   }
 
 
-  ignore("the distance column should be computed correctly") {
+  ignore("should compute the distance column correctly") {
     val rootDirectory = Files.createTempDirectory(this.getClass.getName + "Citibike")
     val ingestedDir = rootDirectory.resolve("ingest")
     val transformedDir = rootDirectory.resolve("transform")
