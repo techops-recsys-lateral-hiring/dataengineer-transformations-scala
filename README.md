@@ -5,17 +5,22 @@ These jobs are using _Spark_ to process larger volumes of data and are supposed 
 
 ## Pre-requisites
 
+We use [`batect`](https://batect.dev/) to dockerise the tasks in this exercise.
+`batect` is a lightweight wrapper around Docker that helps to ensure tasks run consistently (across linux, mac windows).
+With `batect`, the only dependencies that need to be installed are Docker and Java >=8. Every other dependency is
+managed inside Docker containers. If docker desktop can't be installed then Colima could be used on Mac and Linux.
+
+> **For Windows, docker desktop is the only option for using container to run application otherwise local laptop should be set up.**
+
 Please make sure you have the following installed and can run them
 
 * Docker Desktop or Colima
 * Java (11)
 
-> **For Windows, docker desktop is the only option for using container to run application otherwise local laptop should be set up.**
-
 You could use following instructions as guidelines to install Docker or Colima and Java.
 
 ```bash
-**# Install pre-requisites needed by batect** 
+# Install pre-requisites needed by batect 
 # For mac users: 
 ./go.sh install-with-docker-desktop
 OR
