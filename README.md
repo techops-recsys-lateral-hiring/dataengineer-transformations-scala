@@ -82,6 +82,11 @@ Full list of commands for Windows users is as follows:
 | 8     | go.ps1 run-docker-desktop-job       | Run job on containers using Docker Desktop   |
 | 9     | go.ps1 Usage       | Display usage   |
 
+
+---
+# STOP HERE: Do not code before the interview begins.
+---
+
 ## Jobs
 
 There are two applications in this repo: Word Count, and Citibike.
