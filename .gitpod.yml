@@ -5,5 +5,5 @@ image:
 tasks:
   - init: |
       sbt clean compile
-      sbt package
       sbt test
+      sbt package

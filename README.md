@@ -1,86 +1,84 @@
 # Data transformations with Scala
 
 This is a collection of jobs that are supposed to transform data.
-These jobs are using _Spark_ to process larger volumes of data and are supposed to run on a _Spark_ cluster (via `spark-submit`).
+These jobs are using _Spark_ to process larger volumes of data and are supposed to run on a _Spark_ cluster (
+via `spark-submit`).
+
+## Gearing Up for the Pairing Session
+
+**✅ Goals**
+
+1. **Get a working environment**  
+   Either local ([local](#local-setup), or using [gitpod](#gitpod-setup))
+2. **Get a high-level understanding of the code and test dataset structure**
+3. Have your preferred text editor or IDE setup and ready to go.
+
+**❌ Non-Goals**
+
+- solving the exercises / writing code
+  > ⚠️ The exercises will be given at the time of interview, and solved by pairing with the interviewer.
 
 ## Pre-requisites
 
-We use [`batect`](https://batect.dev/) to dockerise the tasks in this exercise.
-`batect` is a lightweight wrapper around Docker that helps to ensure tasks run consistently (across linux, mac windows).
-With `batect`, the only dependencies that need to be installed are Docker and Java >=8. Every other dependency is
-managed inside Docker containers. If docker desktop can't be installed then Colima could be used on Mac and Linux.
+Please make sure you have the following installed
 
-> **For Windows, docker desktop is the only option for using container to run application otherwise local laptop should be set up.**
+* Java 11
+* Scala 2.12.16
+* Sbt 1.7.x
+* Apache Spark 3.3 with ability to run spark-submit
 
-Please make sure you have the following installed and can run them
+## Local Setup Process
 
-* Docker Desktop or Colima
-* Java (11)
+* Clone the repo
+* Package the project with `sbt package`
+* Ensure that you're able to run the tests with `sbt test` (some are ignored)
+* Sample data is available in the `src/test/resource/data` directory
 
-You could use following instructions as guidelines to install Docker or Colima and Java.
+> 💡 If you don't manage to run the local setup or you have restrictions to install software in your laptop, use
+> the [gitpod](#gitpod-setup) one
+
+### Gitpod setup
+
+Alternatively, you can setup the environment using
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/techops-recsys-lateral-hiring/dataengineer-transformations-scala)
+
+There's an initialize script setup that takes around 3 minutes to complete. Once you use paste this repository link in
+new Workspace, please wait until the packages are installed.
+After everything is setup, select Poetry's environment by clicking on thumbs up icon and navigate to Testing tab and hit
+refresh icon to discover tests.
+
+Note that you can use gitpod's web interface or
+setup [ssh to Gitpod](https://www.gitpod.io/docs/references/ides-and-editors/vscode#connecting-to-vs-code-desktop) so
+that you can use VS Code from local to remote to Gitpod
+
+Remember to stop the vm and restart it just before the interview.
+
+### Verify setup
+
+> All of the following commands should be running successfully
+
+#### Run all tests
 
 ```bash
-# Install pre-requisites needed by batect 
-# For mac users: 
-./go.sh install-with-docker-desktop
-OR
-./go.sh install-with-colima
-
-# For windows/linux users:
-# Please ensure Docker and java >=8 is installed 
-scripts\install_choco.ps1
-scripts\install.bat
-
-# For local laptop setup ensure that Java 11 with Spark 3.2.1 is available. More details in README-LOCAL.md
+sbt test
 ```
 
-> **If you are using Colima, please ensure that you start Colima. For staring Colima, you could use following command:**
+#### Run specific tests class
 
-`./go.sh start-colima`
+```bash
+sbt "test:testOnly *MySuite"
+```
 
-## List of commands
+#### Run style checks
 
-General pattern apart from installation and starting of Colima is:
+```bash
+sbt scalastyle
+```
 
-`./go.sh run-<type>-<action>`
-
-type could be local, colima or docker-desktop
-
-action could be unit-test, integration-test or job.
-
-Full list of commands for Mac and Linux users is as follows:
-
-| S.No.      | Command | Action     |
-| :---:        |    :----   |          :--- |
-| 1      | ./go.sh lint       | Static analysis, code style, etc. (please install poetry if you would like to use this command)   |
-| 2      | ./go.sh linting       | Static analysis, code style, etc. (please install poetry if you would like to use this command)   |
-| 3      | ./go.sh install-with-docker-desktop       | Install the application requirements along with docker desktop   |
-| 4      | ./go.sh install-with-colima       | Install the application requirements along with colima   |
-| 5      | ./go.sh start-colima       | Start Colima   |
-| 6      | ./go.sh run-local-unit-test       | Run unit tests on local machine   |
-| 7      | ./go.sh run-colima-unit-test       | Run unit tests on containers using Colima   |
-| 8      | ./go.sh run-docker-desktop-unit-test       | Run unit tests on containers using Docker Desktop   |
-| 9      | ./go.sh run-local-integration-test       | Run integration tests on local machine   |
-| 10      | ./go.sh run-colima-integration-test       | Run integration tests on containers using Colima   |
-| 11     | ./go.sh run-docker-desktop-integration-test       | Run integration tests on containers using Docker Desktop   |
-| 12     | ./go.sh run-local-job       | Run job on local machine   |
-| 13     | ./go.sh run-colima-job       | Run job on containers using Colima   |
-| 14     | ./go.sh run-docker-desktop-job       | Run job on containers using Docker Desktop   |
-| 15     | ./go.sh Usage       | Display usage   |
-
-Full list of commands for Windows users is as follows:
-
-| S.No.      | Command | Action     |
-| :---:        |    :----   |          :--- |
-| 1      | go.ps1 linting       | Static analysis, code style, etc. (please install poetry if you would like to use this command)  |
-| 2      | go.ps1 install-with-docker-desktop       | Install the application requirements along with docker desktop   |
-| 3      | go.ps1 run-local-unit-test       | Run unit tests on local machine   |
-| 4      | go.ps1 run-docker-desktop-unit-test       | Run unit tests on containers using Docker Desktop   |
-| 5      | go.ps1 run-local-integration-test       | Run integration tests on local machine   |
-| 6     | go.ps1 run-docker-desktop-integration-test       | Run integration tests on containers using Docker Desktop   |
-| 7     | go.ps1 run-local-job       | Run job on local machine   |
-| 8     | go.ps1 run-docker-desktop-job       | Run job on containers using Docker Desktop   |
-| 9     | go.ps1 Usage       | Display usage   |
+---
+# STOP HERE: Do not code before the interview begins.
+---
 
 ## Jobs
 
@@ -112,23 +110,13 @@ A single `*.csv` file containing data similar to:
 ...
 ```
 
-#### Run the job using Docker Desktop on Mac or Linux
+#### Run the job
 
 ```bash
-JOB=wordcount ./go.sh run-docker-desktop-job 
-```
-
-#### Run the job using Docker Desktop on Windows
-
-```bash
-$env:JOB = "wordcount" 
-.\go.ps1 run-docker-desktop-job 
-```
-
-#### Run the job using Colima
-
-```bash
-JOB=wordcount ./go.sh run-colima-job 
+ spark-submit --master local --class thoughtworks.wordcount.WordCount \
+    target/scala-2.12/tw-pipeline_2.12-0.1.0-SNAPSHOT.jar \
+    "./src/main/resources/data/words.txt" \
+    ./output
 ```
 
 ### Citibike
@@ -165,23 +153,13 @@ Historical bike ride `*.csv` file:
 ...
 ```
 
-##### Run the job using Docker Desktop on Mac or Linux
+##### Run the job
 
 ```bash
-JOB=citibike_ingest ./go.sh run-docker-desktop-job
-```
-
-##### Run the job using Docker Desktop on Windows
-
-```bash
-$env:JOB = citibike_ingest
-.\go.ps1 run-docker-desktop-job
-```
-
-##### Run the job using Colima
-
-```bash
-JOB=citibike_ingest ./go.sh run-colima-job
+spark-submit --master local --class thoughtworks.ingest.DailyDriver \
+    target/scala-2.12/tw-pipeline_2.12-0.1.0-SNAPSHOT.jar \
+    "./src/main/resources/data/citibike.csv" \
+    "./output_int"
 ```
 
 #### Distance calculation
@@ -216,26 +194,9 @@ Historical bike ride `*.parquet` files
 
 ##### Run the job
 
-##### Run the job using Docker Desktop on Mac or Linux
-
 ```bash
-JOB=citibike_distance_calculation ./go.sh run-docker-desktop-job
+ spark-submit --master local --class thoughtworks.citibike.CitibikeTransformer \
+    target/scala-2.12/tw-pipeline_2.12-0.1.0-SNAPSHOT.jar \
+    "./output_int" \
+    ./output
 ```
-
-##### Run the job using Docker Desktop on Windows
-
-```bash
-$env:JOB = "citibike_distance_calculation" 
-.\go.ps1 run-docker-desktop-job
-```
-
-##### Run the job using Colima
-
-```bash
-JOB=citibike_distance_calculation ./go.sh run-colima-job
-```
-
-## Running the code outside container
-
-If you would like to run the code in your laptop locally without containers then please follow
-instructions [here](README-LOCAL.md).
