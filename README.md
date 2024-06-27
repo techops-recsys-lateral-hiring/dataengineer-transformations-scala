@@ -200,3 +200,5 @@ Historical bike ride `*.parquet` files
     "./output_int" \
     ./output
 ```
+
+> ⚠️ The exercises will be given at the time of interview, and solved by pairing with the interviewer.
