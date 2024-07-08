@@ -35,7 +35,7 @@ object DailyDriver {
     spark.stop()
   }
 
-  private def getInputAndOutputPaths(args: Array[String]) = {
+  private def getInputAndOutputPaths(args: Array[String]): (String, String) = {
     if (args.length < 2) {
       log.warn("Input source and output path are required")
       System.exit(1)
@@ -57,12 +57,12 @@ object DailyDriver {
       .parquet(outputPath)
   }
 
-  def formatColumnHeaders(dataFrame: DataFrame): DataFrame = {
-    var retDf = dataFrame
-    for (column <- retDf.columns) {
-      retDf = retDf.withColumnRenamed(column, column.replaceAll("\\s", "_"))
+  private def formatColumnHeaders(dataFrame: DataFrame): DataFrame = {
+    var df = dataFrame
+    for (column <- df.columns) {
+      df = df.withColumnRenamed(column, column.replaceAll("\\s", "_"))
     }
-    retDf.printSchema()
-    retDf
+    df.printSchema()
+    df
   }
 }

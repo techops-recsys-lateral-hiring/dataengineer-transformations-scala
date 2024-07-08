@@ -1,0 +1,9 @@
+
+image:
+  file: .gitpod.Dockerfile
+
+tasks:
+  - init: |
+      sbt clean compile
+      sbt test
+      sbt package
