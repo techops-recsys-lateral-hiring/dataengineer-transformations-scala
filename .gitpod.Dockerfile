@@ -10,7 +10,8 @@ RUN wget https://archive.apache.org/dist/spark/spark-3.3.0/spark-3.3.0-bin-hadoo
 RUN tar xvf spark-3.3.0-bin-hadoop3.tgz
 ENV PATH="/opt/spark-3.3.0-bin-hadoop3/bin:$PATH"
 
-#TODO : Change the user to non root user
-#USER 185
+
 WORKDIR /app
 ENTRYPOINT ["tail", "-f", "/dev/null"]
+
+
