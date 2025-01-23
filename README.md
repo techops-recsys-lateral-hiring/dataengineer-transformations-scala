@@ -37,11 +37,13 @@ Please make sure you have the following installed
 > 💡 If you don't manage to run the local setup or you have restrictions to install software in your laptop, use
 > the [gitpod](#gitpod-setup) one
 
-### Gitpod setup
+### Online IDE setup
 
 Alternatively, you can setup the environment using
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/techops-recsys-lateral-hiring/dataengineer-transformations-scala)
+
+[![Open in Codeanywhere](https://codeanywhere.com/img/open-in-codeanywhere-btn.svg)](https://app.codeanywhere.com/#https://github.com/techops-recsys-lateral-hiring/dataengineer-transformations-scala)
 
 There's an initialize script setup that takes around 3 minutes to complete. Once you use paste this repository link in
 new Workspace, please wait until the packages are installed.
