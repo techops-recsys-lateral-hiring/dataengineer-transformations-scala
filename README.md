@@ -37,22 +37,30 @@ Please make sure you have the following installed
 > 💡 If you don't manage to run the local setup or you have restrictions to install software in your laptop, use
 > the [gitpod](#gitpod-setup) one
 
-### Gitpod setup
+### Cloud Development Setup
 
-Alternatively, you can setup the environment using
+You can quickly set up the development environment using either Gitpod or Codeanywhere:
+
+#### 🌐 Gitpod
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/techops-recsys-lateral-hiring/dataengineer-transformations-scala)
 
-There's an initialize script setup that takes around 3 minutes to complete. Once you use paste this repository link in
-new Workspace, please wait until the packages are installed.
-After everything is setup, select Poetry's environment by clicking on thumbs up icon and navigate to Testing tab and hit
-refresh icon to discover tests.
+#### 🌍 Codeanywhere
+[![Open in Codeanywhere](https://codeanywhere.com/img/open-in-codeanywhere-btn.svg)](https://app.codeanywhere.com/#https://github.com/techops-recsys-lateral-hiring/dataengineer-transformations-scala)
 
-Note that you can use gitpod's web interface or
-setup [ssh to Gitpod](https://www.gitpod.io/docs/references/ides-and-editors/vscode#connecting-to-vs-code-desktop) so
-that you can use VS Code from local to remote to Gitpod
+#### Setup Instructions
+- An initialization script is preconfigured and takes approximately 3 minutes to complete.
+- When opening the repository in a new workspace, wait for all required packages to install.
+- After setup is complete:
+   - Select Poetry’s environment by clicking the thumbs-up icon.
+    - Navigate to the Testing tab and hit the refresh icon to discover available tests.
 
-Remember to stop the vm and restart it just before the interview.
+#### Using Gitpod with VS Code
+You can either use Gitpod’s web interface or configure SSH access to work with VS Code on your local machine.
+Follow this [guide](https://www.gitpod.io/docs/references/ides-and-editors/vscode#connecting-to-vs-code-desktop)  for setup instructions.
+
+#### Important Reminder
+> Before your interview, stop the VM and restart it to ensure a fresh environment.
 
 ### Verify setup
 
