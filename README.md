@@ -8,8 +8,7 @@ via `spark-submit`).
 
 **✅ Goals**
 
-1. **Get a working environment**  
-   Either local ([local](#local-setup), or using [gitpod](#gitpod-setup))
+1. **Get a working environment** See [local](#local-setup)
 2. **Get a high-level understanding of the code and test dataset structure**
 3. Have your preferred text editor or IDE setup and ready to go.
 
@@ -22,37 +21,17 @@ via `spark-submit`).
 
 Please make sure you have the following installed
 
-* Java 11
-* Scala 2.12.16
-* Sbt 1.7.x
-* Apache Spark 3.3 with ability to run spark-submit
+- Java 11
+- Scala 2.12.16
+- Sbt 1.7.x
+- Apache Spark 3.3 with ability to run spark-submit
 
 ## Local Setup Process
 
-* Clone the repo
-* Package the project with `sbt package`
-* Ensure that you're able to run the tests with `sbt test` (some are ignored)
-* Sample data is available in the `src/test/resource/data` directory
-
-> 💡 If you don't manage to run the local setup or you have restrictions to install software in your laptop, use
-> the [gitpod](#gitpod-setup) one
-
-### Gitpod setup
-
-Alternatively, you can setup the environment using
-
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/techops-recsys-lateral-hiring/dataengineer-transformations-scala)
-
-There's an initialize script setup that takes around 3 minutes to complete. Once you use paste this repository link in
-new Workspace, please wait until the packages are installed.
-After everything is setup, select Poetry's environment by clicking on thumbs up icon and navigate to Testing tab and hit
-refresh icon to discover tests.
-
-Note that you can use gitpod's web interface or
-setup [ssh to Gitpod](https://www.gitpod.io/docs/references/ides-and-editors/vscode#connecting-to-vs-code-desktop) so
-that you can use VS Code from local to remote to Gitpod
-
-Remember to stop the vm and restart it just before the interview.
+- Clone the repo
+- Package the project with `sbt package`
+- Ensure that you're able to run the tests with `sbt test` (some are ignored)
+- Sample data is available in the `src/test/resource/data` directory
 
 ### Verify setup
 
@@ -77,12 +56,15 @@ sbt scalastyle
 ```
 
 ---
+
 # STOP HERE: Do not code before the interview begins.
+
 ---
 
-
 ---
+
 # STOP HERE: Do not code before the interview begins.
+
 ---
 
 ## Jobs
