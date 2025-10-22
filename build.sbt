@@ -1,7 +1,7 @@
 
-scalaVersion := "2.12.16"
+scalaVersion := "2.13.17"
 
-val sparkVersion = "3.3.0"
+val sparkVersion = "4.0.1"
 
 
 lazy val root = (project in file("."))
