@@ -1,0 +1,19 @@
+{
+  "name": "Java",
+  "image": "mcr.microsoft.com/devcontainers/java:1-21-bullseye",
+
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "17",
+      "jdkDistro": "open",
+      "installMaven": "false",
+      "installGradle": "false"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["scalameta.metals", "scala-lang.scala"]
+    }
+  },
+  "postCreateCommand": "sdk install sbt 1.11.6"
+}

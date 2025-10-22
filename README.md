@@ -4,34 +4,64 @@ This is a collection of jobs that are supposed to transform data.
 These jobs are using _Spark_ to process larger volumes of data and are supposed to run on a _Spark_ cluster (
 via `spark-submit`).
 
-## Gearing Up for the Pairing Session
+## Preparing for the interview
 
-**✅ Goals**
+> [!WARNING]
+> The exercises will be given at the time of interview, and **solved by pairing with the interviewer**.  
+> Please do not solve the exercises before the interview.
 
-1. **Get a working environment** See [local](#local-setup)
-2. **Get a high-level understanding of the code and test dataset structure**
+**✅ Goals:**
+
+1. **Get a [working environment set up](#setup-the-environment).** You can setup a [local environment](#option-1-local-setup), use a [github codespaces](#option-2-devcontainer-setup---github-codespaces) or use [other alternative](#option-3-in-vscode---alternative).
+2. 2. **Get a high-level understanding of the code and test dataset structure**
 3. Have your preferred text editor or IDE setup and ready to go.
+4. ⚠️ Don't solve the exercises before the interview. ⚠️
 
-**❌ Non-Goals**
+## Setup the environment
 
-- solving the exercises / writing code
-  > ⚠️ The exercises will be given at the time of interview, and solved by pairing with the interviewer.
+### Option 1: Local Setup
 
-## Pre-requisites
+> [!TIP]
+> Use the [Devcontainer setup](#option-2-devcontainer-setup---github-codespaces) if you encounter issues.
 
-Please make sure you have the following installed
+#### Pre-requisites
 
-- Java 11
-- Scala 2.12.16
-- Sbt 1.7.x
-- Apache Spark 3.3 with ability to run spark-submit
+Please make sure you have the following installed and can run them
 
-## Local Setup Process
+- Java 17
+- Scala 2.13.17
+- Sbt 1.11.6
+- Apache Spark 4.0 with ability to run spark-submit
+
+#### Windows users
+
+We recommend using WSL 2 on Windows for this exercise, due to the [lack of support](https://cwiki.apache.org/confluence/display/HADOOP2/WindowsProblems) of windows paths from Hadoop/Spark.
+
+Follow instructions on the [Windows official page](https://learn.microsoft.com/en-us/windows/wsl/setup/environment) and then the linux install.  
+Use the [Devcontainer setup](#option-2-devcontainer-setup) if you encounter issues.
+
+#### Local Setup Process
 
 - Clone the repo
 - Package the project with `sbt package`
 - Ensure that you're able to run the tests with `sbt test` (some are ignored)
 - Sample data is available in the `src/test/resource/data` directory
+
+### Option 2: Devcontainer setup - Github codespaces
+
+Configuration to use dev containers is provided in `.devcontainer`
+
+> [!WARNING]
+> This takes up to 7 minutes to setup, make sure to have things running before the interview.
+
+1. [Fork](https://github.com/techops-recsys-lateral-hiring/dataengineer-transformations-scala/fork) this repository.
+2. Follow [codespace instructions](https://docs.github.com/en/codespaces/developing-in-a-codespace/creating-a-codespace-for-a-repository#the-codespace-creation-process) from the forked repository, to create the environment.
+
+#### Option 3: In VSCode - Alternative
+
+This requires a working local docker setup matching your OS and licensing situation, and [VSCode](https://code.visualstudio.com/download).
+
+If you have all of these, follow instructions in https://code.visualstudio.com/docs/devcontainers/containers. Otherwise, consider using codespaces.
 
 ### Verify setup
 
@@ -55,17 +85,16 @@ sbt "test:testOnly *MySuite"
 sbt scalastyle
 ```
 
----
+### Done!
 
-# STOP HERE: Do not code before the interview begins.
+All commands are passing?  
+You are good to go!
 
----
+> [!WARNING]
+> Remember, do not try to solve the exercises ahead of the interview.
 
----
-
-# STOP HERE: Do not code before the interview begins.
-
----
+> [!TIP]
+> You are allowed to customize your environment (having the test in vscode directly for example): feel free to spend the time making this comfortable for you. This is not an expectation.
 
 ## Jobs
 
@@ -154,10 +183,8 @@ spark-submit --master local --class thoughtworks.ingest.DailyDriver \
 This job takes bike trip information and calculates the "as the crow flies" distance traveled for each trip. It reads
 the previously ingested data parquet files.
 
-Hint:
-
-- For distance calculation, consider using [**Harvesine formula**](https://en.wikipedia.org/wiki/Haversine_formula) as
-  an option.
+> [!TIP]
+> For distance calculation, consider using [**Haversine formula**](https://www.movable-type.co.uk/scripts/latlong.html) as an option.
 
 ##### Input
 
@@ -187,3 +214,6 @@ Historical bike ride `*.parquet` files
     "./output_int" \
     ./output
 ```
+
+> [!WARNING]
+> One last time: do not try to solve the exercises ahead of the interview. 😅
