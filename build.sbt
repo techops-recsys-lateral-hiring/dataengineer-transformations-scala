@@ -9,7 +9,7 @@ lazy val root = (project in file("."))
   .settings(
     inThisBuild(List(
       organization := "com.thoughtworks.cd.de",
-      scalaVersion := "2.12.16",
+      scalaVersion := "2.13.17",
       version := "0.1.0-SNAPSHOT"
     )),
     Defaults.itSettings,
