@@ -52,7 +52,8 @@ Use the [Devcontainer setup](#option-2-devcontainer-setup) if you encounter issu
 Configuration to use dev containers is provided in `.devcontainer`
 
 > [!WARNING]
-> This takes up to 7 minutes to setup, make sure to have things running before the interview.
+> This takes up to 7 minutes to setup, make sure to have things running before the interview.  
+> You might need to wait for sbt to install on codespaces
 
 1. [Fork](https://github.com/techops-recsys-lateral-hiring/dataengineer-transformations-scala/fork) this repository.
 2. Follow [codespace instructions](https://docs.github.com/en/codespaces/developing-in-a-codespace/creating-a-codespace-for-a-repository#the-codespace-creation-process) from the forked repository, to create the environment.
