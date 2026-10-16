@@ -1,7 +1,7 @@
 
-scalaVersion := "2.13.17"
+scalaVersion := "2.13.18"
 
-val sparkVersion = "4.0.1"
+val sparkVersion = "4.0.4"
 
 
 lazy val root = (project in file("."))
@@ -9,7 +9,7 @@ lazy val root = (project in file("."))
   .settings(
     inThisBuild(List(
       organization := "com.thoughtworks.cd.de",
-      scalaVersion := "2.13.17",
+      scalaVersion := "2.13.18",
       version := "0.1.0-SNAPSHOT"
     )),
     Defaults.itSettings,
